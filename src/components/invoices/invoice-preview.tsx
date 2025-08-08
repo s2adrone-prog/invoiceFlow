@@ -12,6 +12,9 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
   const handlePrint = () => {
     window.print();
   };
+  
+  const subtotal = invoice.items.reduce((acc, item) => acc + item.quantity * item.price, 0);
+  const gstAmount = subtotal * (invoice.gstRate / 100);
 
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-8 print:p-0">
@@ -78,11 +81,11 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
             <div className="w-full max-w-xs space-y-2">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>${invoice.total.toFixed(2)}</span>
+                <span>${subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span>Tax (0%)</span>
-                <span>$0.00</span>
+                <span>GST ({invoice.gstRate}%)</span>
+                <span>${gstAmount.toFixed(2)}</span>
               </div>
               <Separator />
               <div className="flex justify-between font-bold text-lg">

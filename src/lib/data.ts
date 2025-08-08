@@ -13,7 +13,8 @@ const invoices: Invoice[] = [
       { id: '1', description: 'Web Development Services', quantity: 1, price: 5000 },
       { id: '2', description: 'Hosting (1 year)', quantity: 1, price: 300 },
     ],
-    total: 5300,
+    gstRate: 18,
+    total: 6254,
   },
   {
     id: '2',
@@ -26,7 +27,8 @@ const invoices: Invoice[] = [
     items: [
       { id: '1', description: 'Mark 42 Armor Repair', quantity: 1, price: 100000 },
     ],
-    total: 100000,
+    gstRate: 18,
+    total: 118000,
   },
   {
     id: '3',
@@ -40,7 +42,8 @@ const invoices: Invoice[] = [
       { id: '1', description: 'Grappling Hook', quantity: 5, price: 1000 },
       { id: '2', description: 'Batarangs (Pack of 10)', quantity: 10, price: 500 },
     ],
-    total: 10000,
+    gstRate: 12,
+    total: 11200,
   },
   {
     id: '4',
@@ -53,7 +56,8 @@ const invoices: Invoice[] = [
     items: [
       { id: '1', description: 'Neural Net Processor', quantity: 1, price: 75000 },
     ],
-    total: 75000,
+    gstRate: 18,
+    total: 88500,
   },
   {
     id: '5',
@@ -66,7 +70,8 @@ const invoices: Invoice[] = [
     items: [
       { id: '1', description: 'Performance Enhancers', quantity: 100, price: 250 },
     ],
-    total: 25000,
+    gstRate: 28,
+    total: 32000,
   },
   {
     id: '6',
@@ -79,6 +84,7 @@ const invoices: Invoice[] = [
     items: [
       { id: '1', description: 'Consulting Services', quantity: 40, price: 200 },
     ],
+    gstRate: 0,
     total: 8000,
   },
   {
@@ -92,7 +98,8 @@ const invoices: Invoice[] = [
     items: [
       { id: '1', description: 'TPS Reports Cover Sheets', quantity: 500, price: 2.5 },
     ],
-    total: 1250,
+    gstRate: 5,
+    total: 1312.5,
   }
 ];
 
