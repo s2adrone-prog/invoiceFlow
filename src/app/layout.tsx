@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { AppLayout } from '@/components/app-layout';
 import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
+import { AuthProvider } from '@/components/auth-provider';
 
 export const metadata: Metadata = {
   title: 'ADR E-Store',
@@ -24,8 +25,10 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-        <AppLayout>{children}</AppLayout>
-        <Toaster />
+        <AuthProvider>
+            <AppLayout>{children}</AppLayout>
+            <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );

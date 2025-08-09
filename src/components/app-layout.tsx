@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutDashboard, FileText, Lightbulb, User } from "lucide-react";
+import { LayoutDashboard, FileText, Lightbulb, User, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -20,6 +20,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Logo } from "@/components/icons";
+import { useAuth } from "@/components/auth-provider";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+  } from "@/components/ui/dropdown-menu";
 
 const menuItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -29,12 +36,19 @@ const menuItems = [
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { user, logout } = useAuth();
 
   const getPageTitle = () => {
     if (pathname === '/invoices/new') return 'Create New Invoice';
     if (pathname.startsWith('/invoices/')) return 'Invoice Details';
     const currentItem = menuItems.find((item) => pathname.startsWith(item.href) && (item.href === '/' ? pathname === '/' : true));
     return currentItem?.label || 'Dashboard';
+  }
+
+  // Don't render layout for auth pages
+  const authPages = ['/login', '/signup'];
+  if (authPages.includes(pathname)) {
+    return <>{children}</>;
   }
 
   return (
@@ -64,18 +78,30 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
-          <div className="flex items-center gap-3 p-2">
-            <Avatar className="size-9">
-              <AvatarImage data-ai-hint="profile picture" src="https://placehold.co/40x40" />
-              <AvatarFallback>
-                <User />
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col">
-              <span className="text-sm font-medium">Admin User</span>
-              <span className="text-xs text-muted-foreground">admin@adrestore.com</span>
-            </div>
-          </div>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="w-full justify-start p-2 h-auto">
+                        <div className="flex items-center gap-3">
+                            <Avatar className="size-9">
+                            <AvatarImage data-ai-hint="profile picture" src={`https://avatar.vercel.sh/${user?.email}.png`} />
+                                <AvatarFallback>
+                                    <User />
+                                </AvatarFallback>
+                            </Avatar>
+                            <div className="flex flex-col items-start text-left">
+                                <span className="text-sm font-medium">{user?.name}</span>
+                                <span className="text-xs text-muted-foreground">{user?.email}</span>
+                            </div>
+                        </div>
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56 mb-2">
+                    <DropdownMenuItem onClick={logout}>
+                        <LogOut className="mr-2 h-4 w-4" />
+                        <span>Log out</span>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
