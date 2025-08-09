@@ -3,7 +3,7 @@
 import { LayoutDashboard, FileText, Lightbulb, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   SidebarProvider,
@@ -29,6 +29,11 @@ const menuItems = [
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const getPageTitle = () => {
     if (pathname === '/invoices/new') return 'Create New Invoice';
@@ -41,7 +46,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <Sidebar>
         <SidebarHeader>
           <div className="flex items-center gap-2">
-            <Logo className="w-auto h-7 text-primary" />
+            {isMounted && <Logo className="w-auto h-7 text-primary" />}
           </div>
         </SidebarHeader>
         <SidebarContent>
