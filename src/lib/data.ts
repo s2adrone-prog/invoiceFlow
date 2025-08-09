@@ -7,7 +7,6 @@ const invoices: Invoice[] = [
     customerName: 'Acme Inc.',
     customerEmail: 'contact@acme.com',
     invoiceDate: '2024-06-01',
-    dueDate: '2024-06-30',
     status: 'Paid',
     items: [
       { id: '1', description: 'Web Development Services', quantity: 1, price: 5000 },
@@ -22,7 +21,6 @@ const invoices: Invoice[] = [
     customerName: 'Stark Industries',
     customerEmail: 'tony@stark.com',
     invoiceDate: '2024-05-15',
-    dueDate: '2024-06-15',
     status: 'Pending',
     items: [
       { id: '1', description: 'Mark 42 Armor Repair', quantity: 1, price: 100000 },
@@ -36,7 +34,6 @@ const invoices: Invoice[] = [
     customerName: 'Wayne Enterprises',
     customerEmail: 'bruce@wayne.com',
     invoiceDate: '2024-04-01',
-    dueDate: '2024-05-01',
     status: 'Overdue',
     items: [
       { id: '1', description: 'Grappling Hook', quantity: 5, price: 1000 },
@@ -51,7 +48,6 @@ const invoices: Invoice[] = [
     customerName: 'Cyberdyne Systems',
     customerEmail: 'info@cyberdyne.com',
     invoiceDate: '2024-05-20',
-    dueDate: '2024-06-20',
     status: 'Paid',
     items: [
       { id: '1', description: 'Neural Net Processor', quantity: 1, price: 75000 },
@@ -65,7 +61,6 @@ const invoices: Invoice[] = [
     customerName: 'Oscorp',
     customerEmail: 'norman@oscorp.com',
     invoiceDate: '2024-06-10',
-    dueDate: '2024-07-10',
     status: 'Pending',
     items: [
       { id: '1', description: 'Performance Enhancers', quantity: 100, price: 250 },
@@ -79,7 +74,6 @@ const invoices: Invoice[] = [
     customerName: 'Globex Corporation',
     customerEmail: 'hank@globex.com',
     invoiceDate: '2024-03-12',
-    dueDate: '2024-04-12',
     status: 'Paid',
     items: [
       { id: '1', description: 'Consulting Services', quantity: 40, price: 200 },
@@ -93,7 +87,6 @@ const invoices: Invoice[] = [
     customerName: 'Initech',
     customerEmail: 'bill@initech.com',
     invoiceDate: '2024-02-28',
-    dueDate: '2024-03-28',
     status: 'Overdue',
     items: [
       { id: '1', description: 'TPS Reports Cover Sheets', quantity: 500, price: 2.5 },

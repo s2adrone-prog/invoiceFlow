@@ -88,11 +88,6 @@ export const columns: ColumnDef<Invoice>[] = [
     cell: ({ row }) => <div>{new Date(row.getValue("invoiceDate")).toLocaleDateString()}</div>,
   },
   {
-    accessorKey: "dueDate",
-    header: "Due Date",
-    cell: ({ row }) => <div>{new Date(row.getValue("dueDate")).toLocaleDateString()}</div>,
-  },
-  {
     accessorKey: "total",
     header: () => <div className="text-right">Amount</div>,
     cell: ({ row }) => {

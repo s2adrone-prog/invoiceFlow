@@ -11,7 +11,6 @@ export interface Invoice {
   customerName: string;
   customerEmail: string;
   invoiceDate: string;
-  dueDate: string;
   status: 'Paid' | 'Pending' | 'Overdue';
   items: InvoiceItem[];
   gstRate: number;

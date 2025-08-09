@@ -49,7 +49,6 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
             </div>
             <div className="text-right">
               <p><span className="font-semibold">Invoice Date:</span> {new Date(invoice.invoiceDate).toLocaleDateString()}</p>
-              <p><span className="font-semibold">Due Date:</span> {new Date(invoice.dueDate).toLocaleDateString()}</p>
             </div>
           </div>
 

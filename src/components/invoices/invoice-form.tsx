@@ -39,9 +39,6 @@ const formSchema = z.object({
   invoiceDate: z.date({
     required_error: "An invoice date is required.",
   }),
-  dueDate: z.date({
-    required_error: "A due date is required.",
-  }),
   items: z.array(invoiceItemSchema).min(1, "Please add at least one item."),
   gstRate: z.coerce.number().min(0, "GST rate must be non-negative.").default(0),
 });
@@ -58,7 +55,6 @@ export function InvoiceForm() {
       customerName: "",
       customerEmail: "",
       invoiceDate: new Date(),
-      dueDate: new Date(new Date().setDate(new Date().getDate() + 30)),
       items: [{ description: "", quantity: 1, price: 0 }],
       gstRate: 18,
     },
@@ -149,44 +145,6 @@ export function InvoiceForm() {
                       disabled={(date) =>
                         date > new Date() || date < new Date("1900-01-01")
                       }
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="dueDate"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Due Date</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-full pl-3 text-left font-normal",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? (
-                          format(field.value, "PPP")
-                        ) : (
-                          <span>Pick a date</span>
-                        )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
                       initialFocus
                     />
                   </PopoverContent>
