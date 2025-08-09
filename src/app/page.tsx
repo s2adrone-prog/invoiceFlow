@@ -3,7 +3,7 @@ import { CreditCard, DollarSign, Package } from 'lucide-react';
 import { getInvoices } from '@/lib/data';
 import { StatCard } from '@/components/dashboard/stat-card';
 import { RecentInvoices } from '@/components/dashboard/recent-invoices';
-import { SalesChartClient } from '@/components/dashboard/sales-chart-client';
+import { SalesChart } from '@/components/dashboard/sales-chart';
 
 
 export default async function DashboardPage() {
@@ -32,12 +32,12 @@ export default async function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <StatCard
           title="Total Sales"
-          value={`$${totalSales.toLocaleString()}`}
+          value={`$${totalSales.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2})}`}
           icon={DollarSign}
         />
         <StatCard
           title="Outstanding Payments"
-          value={`$${outstandingPayments.toLocaleString()}`}
+          value={`$${outstandingPayments.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2})}`}
           icon={CreditCard}
         />
         <StatCard
@@ -48,7 +48,7 @@ export default async function DashboardPage() {
       </div>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
         <div className="lg:col-span-3">
-          <SalesChartClient data={salesData} />
+          <SalesChart data={salesData} />
         </div>
         <div className="lg:col-span-2">
           <RecentInvoices invoices={invoices.slice(0, 5)} />

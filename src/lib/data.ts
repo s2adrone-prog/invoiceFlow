@@ -53,7 +53,7 @@ const invoices: Invoice[] = [
       { id: '1', description: 'Neural Net Processor', quantity: 1, price: 75000, discountPercentage: 5 },
     ],
     gstRate: 18,
-    total: 82600,
+    total: 83925,
   },
   {
     id: '5',
@@ -92,7 +92,7 @@ const invoices: Invoice[] = [
       { id: '1', description: 'TPS Reports Cover Sheets', quantity: 500, price: 2.5, discountPercentage: 10 },
     ],
     gstRate: 5,
-    total: 1207.5,
+    total: 1181.25,
   }
 ];
 

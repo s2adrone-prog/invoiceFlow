@@ -12,7 +12,7 @@ export const Logo = (props: SVGProps<SVGSVGElement>) => (
     <text
       x="10"
       y="30"
-      fontFamily="'Open Sans', sans-serif"
+      fontFamily="inherit"
       fontSize="24"
       fontWeight="bold"
       fill="currentColor"
