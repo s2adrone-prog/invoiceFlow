@@ -6,6 +6,7 @@ export const Logo = (props: SVGProps<SVGSVGElement>) => (
     viewBox="0 0 200 40"
     width="200"
     height="40"
+    className="w-auto h-7 text-primary"
     {...props}
   >
     <text

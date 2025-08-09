@@ -90,7 +90,7 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
           <div className="flex justify-between items-start">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                 <Logo className="w-auto h-8 text-primary" />
+                 <Logo className="w-auto h-8" />
               </div>
               <p className="text-muted-foreground">123 Business Rd.<br/>Suite 100<br/>City, State 12345</p>
             </div>

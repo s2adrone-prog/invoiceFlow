@@ -42,7 +42,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <Sidebar>
         <SidebarHeader>
           <div className="flex items-center gap-2">
-            <Logo className="w-auto h-7 text-primary" />
+            <Logo />
           </div>
         </SidebarHeader>
         <SidebarContent>
