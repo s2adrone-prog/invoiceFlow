@@ -3,7 +3,7 @@
 import { LayoutDashboard, FileText, Lightbulb, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 import {
   SidebarProvider,
@@ -29,11 +29,6 @@ const menuItems = [
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   const getPageTitle = () => {
     if (pathname === '/invoices/new') return 'Create New Invoice';
@@ -47,7 +42,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <Sidebar>
         <SidebarHeader>
           <div className="flex items-center gap-2">
-            {isMounted && <Logo className="w-auto h-7 text-primary" />}
+            <Logo className="w-auto h-7 text-primary" />
           </div>
         </SidebarHeader>
         <SidebarContent>
@@ -69,7 +64,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
-         {isMounted && (
           <div className="flex items-center gap-3 p-2">
             <Avatar className="size-9">
               <AvatarImage data-ai-hint="profile picture" src="https://placehold.co/40x40" />
@@ -82,7 +76,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <span className="text-xs text-muted-foreground">admin@invoiceflow.com</span>
             </div>
           </div>
-         )}
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
