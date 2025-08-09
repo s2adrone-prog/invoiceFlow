@@ -11,6 +11,7 @@ export interface Invoice {
   invoiceNumber: string;
   customerName: string;
   customerEmail: string;
+  customerPhone: string;
   invoiceDate: string;
   status: 'Paid' | 'Pending' | 'Overdue';
   items: InvoiceItem[];

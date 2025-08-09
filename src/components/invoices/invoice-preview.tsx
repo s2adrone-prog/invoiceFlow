@@ -113,6 +113,7 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
               <h3 className="font-semibold mb-2">Bill To:</h3>
               <p>{invoice.customerName}</p>
               <p className="text-muted-foreground">{invoice.customerEmail}</p>
+              <p className="text-muted-foreground">{invoice.customerPhone}</p>
             </div>
             <div className="text-right">
               <p><span className="font-semibold">Invoice Date:</span> {new Date(invoice.invoiceDate).toLocaleDateString()}</p>

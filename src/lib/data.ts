@@ -6,6 +6,7 @@ const invoices: Invoice[] = [
     invoiceNumber: 'INV-001',
     customerName: 'Acme Inc.',
     customerEmail: 'contact@acme.com',
+    customerPhone: '+1-202-555-0143',
     invoiceDate: '2024-06-01',
     status: 'Paid',
     items: [
@@ -20,6 +21,7 @@ const invoices: Invoice[] = [
     invoiceNumber: 'INV-002',
     customerName: 'Stark Industries',
     customerEmail: 'tony@stark.com',
+    customerPhone: '+1-202-555-0185',
     invoiceDate: '2024-05-15',
     status: 'Pending',
     items: [
@@ -33,6 +35,7 @@ const invoices: Invoice[] = [
     invoiceNumber: 'INV-003',
     customerName: 'Wayne Enterprises',
     customerEmail: 'bruce@wayne.com',
+    customerPhone: '+1-202-555-0161',
     invoiceDate: '2024-04-01',
     status: 'Overdue',
     items: [
@@ -47,6 +50,7 @@ const invoices: Invoice[] = [
     invoiceNumber: 'INV-004',
     customerName: 'Cyberdyne Systems',
     customerEmail: 'info@cyberdyne.com',
+    customerPhone: '+1-202-555-0158',
     invoiceDate: '2024-05-20',
     status: 'Paid',
     items: [
@@ -60,6 +64,7 @@ const invoices: Invoice[] = [
     invoiceNumber: 'INV-005',
     customerName: 'Oscorp',
     customerEmail: 'norman@oscorp.com',
+    customerPhone: '+1-202-555-0169',
     invoiceDate: '2024-06-10',
     status: 'Pending',
     items: [
@@ -73,6 +78,7 @@ const invoices: Invoice[] = [
     invoiceNumber: 'INV-006',
     customerName: 'Globex Corporation',
     customerEmail: 'hank@globex.com',
+    customerPhone: '+1-202-555-0132',
     invoiceDate: '2024-03-12',
     status: 'Paid',
     items: [
@@ -86,6 +92,7 @@ const invoices: Invoice[] = [
     invoiceNumber: 'INV-007',
     customerName: 'Initech',
     customerEmail: 'bill@initech.com',
+    customerPhone: '+1-202-555-0188',
     invoiceDate: '2024-02-28',
     status: 'Overdue',
     items: [

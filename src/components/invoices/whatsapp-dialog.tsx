@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -27,6 +27,12 @@ export function WhatsAppDialog({ invoice, children, onSend }: WhatsAppDialogProp
   const [phoneNumber, setPhoneNumber] = useState("");
   const { toast } = useToast();
 
+  useEffect(() => {
+    if (invoice.customerPhone) {
+      setPhoneNumber(invoice.customerPhone);
+    }
+  }, [invoice.customerPhone]);
+
   const handleSend = async () => {
     if (!phoneNumber.trim()) {
       toast({
@@ -49,7 +55,7 @@ Please find the attached PDF for details.
 
 Thank you for your business!`;
 
-    const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber.replace(/\D/g, '')}&text=${encodeURIComponent(message)}`;
     
     // Give a small delay for the PDF to start downloading before opening whatsapp
     setTimeout(() => {

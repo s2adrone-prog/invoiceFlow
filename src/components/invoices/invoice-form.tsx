@@ -43,6 +43,7 @@ const invoiceItemSchema = z.object({
 const formSchema = z.object({
   customerName: z.string().min(2, "Customer name is required."),
   customerEmail: z.string().email("Invalid email address."),
+  customerPhone: z.string().min(10, "Phone number must be at least 10 digits."),
   invoiceDate: z.date({
     required_error: "An invoice date is required.",
   }),
@@ -62,6 +63,7 @@ export function InvoiceForm() {
     defaultValues: {
       customerName: "",
       customerEmail: "",
+      customerPhone: "",
       invoiceDate: new Date(),
       items: [{ description: "", quantity: 1, price: 0, discountPercentage: 0 }],
       isGstApplicable: true,
@@ -116,7 +118,7 @@ export function InvoiceForm() {
               </FormItem>
             )}
           />
-          <FormField
+           <FormField
             control={form.control}
             name="customerEmail"
             render={({ field }) => (
@@ -124,6 +126,19 @@ export function InvoiceForm() {
                 <FormLabel>Customer Email</FormLabel>
                 <FormControl>
                   <Input placeholder="contact@acme.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="customerPhone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Customer Phone</FormLabel>
+                <FormControl>
+                  <Input placeholder="+1 234 567 890" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
