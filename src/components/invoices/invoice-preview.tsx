@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import type { Invoice } from "@/lib/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -23,11 +23,6 @@ const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 
 export function InvoicePreview({ invoice }: { invoice: Invoice }) {
-  const [isMounted, setIsMounted] = useState(false);
-
-  React.useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   const handlePrint = () => {
     window.print();
@@ -36,9 +31,6 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
   const subtotal = invoice.items.reduce((acc, item) => acc + item.quantity * item.price, 0);
   const gstAmount = subtotal * (invoice.gstRate / 100);
 
-  if (!isMounted) {
-    return null;
-  }
 
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-8 print:p-0">
