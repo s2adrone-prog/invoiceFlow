@@ -38,7 +38,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const getPageTitle = () => {
     if (pathname === '/invoices/new') return 'Create New Invoice';
     if (pathname.startsWith('/invoices/')) return 'Invoice Details';
-    return menuItems.find((item) => pathname.startsWith(item.href) && item.href !== '/')?.label || 'Dashboard';
+    const currentItem = menuItems.find((item) => pathname.startsWith(item.href) && (item.href === '/' ? pathname === '/' : true));
+    return currentItem?.label || 'Dashboard';
   }
 
   return (
