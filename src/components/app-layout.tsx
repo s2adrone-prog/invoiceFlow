@@ -69,6 +69,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
+         {isMounted && (
           <div className="flex items-center gap-3 p-2">
             <Avatar className="size-9">
               <AvatarImage data-ai-hint="profile picture" src="https://placehold.co/40x40" />
@@ -81,6 +82,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <span className="text-xs text-muted-foreground">admin@invoiceflow.com</span>
             </div>
           </div>
+         )}
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
