@@ -5,7 +5,6 @@ import type { Invoice } from "@/lib/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Logo } from "../icons";
 import { Printer } from "lucide-react";
 
 export function InvoicePreview({ invoice }: { invoice: Invoice }) {
@@ -29,7 +28,6 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
           <div className="flex justify-between items-start">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                 <Logo className="size-8 text-primary" />
                  <h1 className="text-2xl font-bold">ADR E-Store</h1>
               </div>
               <p className="text-muted-foreground">123 Business Rd.<br/>Suite 100<br/>City, State 12345</p>

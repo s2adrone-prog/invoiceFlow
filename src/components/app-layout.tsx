@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutDashboard, FileText, Lightbulb, User, Printer } from "lucide-react";
+import { LayoutDashboard, FileText, Lightbulb, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -17,7 +17,6 @@ import {
   SidebarTrigger,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import { Logo } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -36,16 +35,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     return menuItems.find((item) => pathname.startsWith(item.href) && item.href !== '/')?.label || 'Dashboard';
   }
 
-  const handlePrint = () => {
-    window.print();
-  };
-
   return (
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
           <div className="flex items-center gap-2">
-            <Logo className="size-7 text-primary" />
             <h1 className="text-xl font-semibold">ADR E-Store</h1>
           </div>
         </SidebarHeader>
