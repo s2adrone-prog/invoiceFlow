@@ -2,8 +2,9 @@ import { CreditCard, DollarSign, Package } from 'lucide-react';
 
 import { getInvoices } from '@/lib/data';
 import { StatCard } from '@/components/dashboard/stat-card';
-import { SalesChart } from '@/components/dashboard/sales-chart';
 import { RecentInvoices } from '@/components/dashboard/recent-invoices';
+import { SalesChartClient } from '@/components/dashboard/sales-chart-client';
+
 
 export default async function DashboardPage() {
   const invoices = await getInvoices();
@@ -47,7 +48,7 @@ export default async function DashboardPage() {
       </div>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
         <div className="lg:col-span-3">
-          <SalesChart data={salesData} />
+          <SalesChartClient data={salesData} />
         </div>
         <div className="lg:col-span-2">
           <RecentInvoices invoices={invoices.slice(0, 5)} />

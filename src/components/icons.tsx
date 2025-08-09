@@ -16,7 +16,7 @@ export const Logo = (props: SVGProps<SVGSVGElement>) => (
       fontWeight="bold"
       fill="currentColor"
     >
-      ADR E-Store
+      InvoiceFlow
     </text>
   </svg>
 );
