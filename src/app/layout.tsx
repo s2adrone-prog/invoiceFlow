@@ -4,8 +4,8 @@ import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'InvoiceFlow',
-  description: 'GST billing and invoice management',
+  title: 'ADR E-Store',
+  description: 'Your one-stop shop for everything',
 };
 
 export default function RootLayout({

@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutDashboard, FileText, Lightbulb, User } from "lucide-react";
+import { LayoutDashboard, FileText, Lightbulb, User, Printer } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -36,13 +36,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     return menuItems.find((item) => pathname.startsWith(item.href) && item.href !== '/')?.label || 'Dashboard';
   }
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
           <div className="flex items-center gap-2">
             <Logo className="size-7 text-primary" />
-            <h1 className="text-xl font-semibold">InvoiceFlow</h1>
+            <h1 className="text-xl font-semibold">ADR E-Store</h1>
           </div>
         </SidebarHeader>
         <SidebarContent>
@@ -73,7 +77,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </Avatar>
             <div className="flex flex-col">
               <span className="text-sm font-medium">Admin User</span>
-              <span className="text-xs text-muted-foreground">admin@invoiceflow.com</span>
+              <span className="text-xs text-muted-foreground">admin@adrestore.com</span>
             </div>
           </div>
         </SidebarFooter>
