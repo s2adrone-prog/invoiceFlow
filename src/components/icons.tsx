@@ -8,45 +8,49 @@ export const Logo = (props: SVGProps<SVGSVGElement>) => (
     height="40"
     {...props}
   >
-    <text
-      x="10"
-      y="30"
-      fontFamily="serif"
-      fontSize="30"
-      fill="currentColor"
-    >
-      ADR
-    </text>
-    <g transform="translate(90, 2)">
-      <path
-        d="M5 4H19L22 10V28C22 29.1046 21.1046 30 20 30H4C2.89543 30 2 29.1046 2 28V10L5 4Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        fill="none"
-      />
-      <path
-        d="M16 10C16 12.2091 14.2091 14 12 14C9.79086 14 8 12.2091 8 10"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
+    <g transform="translate(10, 0)">
+      <circle cx="20" cy="20" r="18" stroke="currentColor" strokeWidth="1" fill="none" />
       <text
-        x="12"
-        y="23"
-        textAnchor="middle"
-        fontFamily="sans-serif"
-        fontSize="14"
-        fontWeight="bold"
+        x="20"
+        y="25"
+        fontFamily="serif"
+        fontSize="18"
         fill="currentColor"
+        textAnchor="middle"
+      >
+        ADR
+      </text>
+      <text
+        x="28"
+        y="12"
+        fontFamily="serif"
+        fontSize="8"
+        fill="currentColor"
+        textAnchor="middle"
+      >
+        👑
+      </text>
+    </g>
+    
+    <g transform="translate(60, 5)">
+      <rect x="0" y="0" width="30" height="30" rx="2" ry="2" fill="#dc2626" />
+      <path d="M 8 5 H 22 L 25 10 V 28 H 5 L 8 5 Z" stroke="black" strokeWidth="1.5" fill="none" transform="translate(0, -2) scale(0.9)" />
+      <text
+        x="15"
+        y="20"
+        fontFamily="sans-serif"
+        fontSize="18"
+        fontWeight="bold"
+        fill="white"
+        textAnchor="middle"
       >
         E
       </text>
     </g>
+
     <text
-      x="125"
-      y="30"
+      x="100"
+      y="28"
       fontFamily="sans-serif"
       fontSize="24"
       fill="currentColor"
