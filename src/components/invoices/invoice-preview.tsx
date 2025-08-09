@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Printer } from "lucide-react";
+import { Logo } from "@/components/icons";
 
 export function InvoicePreview({ invoice }: { invoice: Invoice }) {
   const handlePrint = () => {
@@ -28,7 +29,7 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
           <div className="flex justify-between items-start">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                 <h1 className="text-2xl font-bold">ADR E-Store</h1>
+                 <Logo className="w-auto h-8 text-primary" />
               </div>
               <p className="text-muted-foreground">123 Business Rd.<br/>Suite 100<br/>City, State 12345</p>
             </div>

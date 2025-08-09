@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Logo } from "@/components/icons";
 
 const menuItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -40,7 +41,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <Sidebar>
         <SidebarHeader>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold">ADR E-Store</h1>
+            <Logo className="w-auto h-7 text-primary" />
           </div>
         </SidebarHeader>
         <SidebarContent>
