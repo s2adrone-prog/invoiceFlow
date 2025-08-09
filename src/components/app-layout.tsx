@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutDashboard, FileText, Lightbulb, User } from "lucide-react";
+import { LayoutDashboard, FileText, Lightbulb, User, Printer } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -34,6 +34,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     if (pathname === '/invoices/new') return 'Create New Invoice';
     if (pathname.startsWith('/invoices/')) return 'Invoice Details';
     return menuItems.find((item) => pathname.startsWith(item.href) && item.href !== '/')?.label || 'Dashboard';
+  }
+
+  const handlePrint = () => {
+    window.print();
   }
 
   return (
@@ -86,9 +90,15 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               {getPageTitle()}
             </h2>
           </div>
-          <Link href="/invoices/new">
-            <Button>Create Invoice</Button>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={handlePrint}>
+              <Printer className="mr-2 h-4 w-4" />
+              Print
+            </Button>
+            <Link href="/invoices/new">
+              <Button>Create Invoice</Button>
+            </Link>
+          </div>
         </header>
         <main className="flex-1 overflow-auto p-4 sm:p-6">
           {children}
