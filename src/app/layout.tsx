@@ -4,7 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'InvoiceFlow',
+  title: 'ADR E-Store',
   description: 'Your one-stop shop for everything',
 };
 

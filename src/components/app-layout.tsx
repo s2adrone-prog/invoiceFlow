@@ -73,7 +73,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </Avatar>
             <div className="flex flex-col">
               <span className="text-sm font-medium">Admin User</span>
-              <span className="text-xs text-muted-foreground">admin@invoiceflow.com</span>
+              <span className="text-xs text-muted-foreground">admin@adrestore.com</span>
             </div>
           </div>
         </SidebarFooter>
