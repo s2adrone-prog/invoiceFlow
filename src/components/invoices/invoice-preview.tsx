@@ -1,6 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 import { Button } from "@/components/ui/button";
 import type { Invoice } from "@/lib/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -23,10 +25,47 @@ const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 
 export function InvoicePreview({ invoice }: { invoice: Invoice }) {
+  const invoiceRef = useRef<HTMLDivElement>(null);
 
   const handlePrint = () => {
     window.print();
   };
+  
+  const handleGeneratePdf = async () => {
+    const input = invoiceRef.current;
+    if (!input) return;
+
+    // Temporarily make all text black for the PDF
+    const originalColors = new Map<HTMLElement, string>();
+    const allElements = input.querySelectorAll<HTMLElement>('*');
+    allElements.forEach(el => {
+        originalColors.set(el, el.style.color);
+        el.style.color = 'black';
+    });
+
+
+    const canvas = await html2canvas(input, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff'
+    });
+    
+    // Restore original colors
+    allElements.forEach(el => {
+        const originalColor = originalColors.get(el);
+        if (originalColor) {
+            el.style.color = originalColor;
+        } else {
+            el.style.removeProperty('color');
+        }
+    });
+
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('p', 'px', [canvas.width, canvas.height], true);
+    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height, undefined, 'FAST');
+    pdf.save(`invoice-${invoice.invoiceNumber}.pdf`);
+  };
+
 
   const subtotal = invoice.items.reduce((acc, item) => acc + item.quantity * item.price, 0);
   const gstAmount = subtotal * (invoice.gstRate / 100);
@@ -35,7 +74,7 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-8 print:p-0">
        <div className="flex justify-end mb-4 print:hidden gap-2">
-        <WhatsAppDialog invoice={invoice}>
+        <WhatsAppDialog invoice={invoice} onSend={handleGeneratePdf}>
           <Button>
             <WhatsAppIcon className="mr-2 h-4 w-4" />
             WhatsApp
@@ -46,7 +85,7 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
           Print / Download
         </Button>
       </div>
-      <Card className="print:shadow-none print:border-none">
+      <Card ref={invoiceRef} className="print:shadow-none print:border-none p-4">
         <CardHeader>
           <div className="flex justify-between items-start">
             <div>

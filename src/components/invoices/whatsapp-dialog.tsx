@@ -20,13 +20,14 @@ import type { Invoice } from "@/lib/types";
 interface WhatsAppDialogProps {
   invoice: Invoice;
   children: React.ReactNode;
+  onSend: () => Promise<void>;
 }
 
-export function WhatsAppDialog({ invoice, children }: WhatsAppDialogProps) {
+export function WhatsAppDialog({ invoice, children, onSend }: WhatsAppDialogProps) {
   const [phoneNumber, setPhoneNumber] = useState("");
   const { toast } = useToast();
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!phoneNumber.trim()) {
       toast({
         title: "Error",
@@ -36,16 +37,24 @@ export function WhatsAppDialog({ invoice, children }: WhatsAppDialogProps) {
       return;
     }
 
+    // Generate and download the PDF first
+    await onSend();
+
+    // Then prepare and open the WhatsApp link
     const message = `Hello ${invoice.customerName},
 
 Here is your invoice ${invoice.invoiceNumber} for $${invoice.total.toFixed(2)}.
 
-You can view the details here: ${window.location.href}
+Please find the attached PDF for details.
 
 Thank you for your business!`;
 
     const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, "_blank");
+    
+    // Give a small delay for the PDF to start downloading before opening whatsapp
+    setTimeout(() => {
+        window.open(whatsappUrl, "_blank");
+    }, 500);
   };
 
   return (
@@ -55,7 +64,7 @@ Thank you for your business!`;
         <DialogHeader>
           <DialogTitle>Send Invoice via WhatsApp</DialogTitle>
           <DialogDescription>
-            Enter the customer's phone number with country code to send the invoice.
+            Enter the customer's phone number with country code. The invoice will be downloaded as a PDF for you to attach.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -78,9 +87,11 @@ Thank you for your business!`;
               Cancel
             </Button>
           </DialogClose>
-          <Button type="submit" onClick={handleSend}>
-            Send Message
-          </Button>
+          <DialogClose asChild>
+            <Button type="submit" onClick={handleSend}>
+              Download PDF & Send
+            </Button>
+          </DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>
