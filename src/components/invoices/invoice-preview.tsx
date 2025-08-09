@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { Invoice } from "@/lib/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -7,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Printer } from "lucide-react";
 import { Logo } from "@/components/icons";
+import { WhatsAppDialog } from "./whatsapp-dialog";
 
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -21,32 +23,32 @@ const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 
 export function InvoicePreview({ invoice }: { invoice: Invoice }) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const handlePrint = () => {
     window.print();
-  };
-  
-  const handleWhatsApp = () => {
-    const message = `Hello ${invoice.customerName},
-  
-Here is your invoice ${invoice.invoiceNumber} for $${invoice.total.toFixed(2)}.
-  
-You can view the details here: ${window.location.href}
-  
-Thank you for your business!`;
-    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
   };
 
   const subtotal = invoice.items.reduce((acc, item) => acc + item.quantity * item.price, 0);
   const gstAmount = subtotal * (invoice.gstRate / 100);
 
+  if (!isMounted) {
+    return null;
+  }
+
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-8 print:p-0">
        <div className="flex justify-end mb-4 print:hidden gap-2">
-        <Button onClick={handleWhatsApp}>
-          <WhatsAppIcon className="mr-2 h-4 w-4" />
-          WhatsApp
-        </Button>
+        <WhatsAppDialog invoice={invoice}>
+          <Button>
+            <WhatsAppIcon className="mr-2 h-4 w-4" />
+            WhatsApp
+          </Button>
+        </WhatsAppDialog>
         <Button onClick={handlePrint}>
           <Printer className="mr-2 h-4 w-4" />
           Print / Download
