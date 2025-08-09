@@ -72,7 +72,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <Avatar className="size-9">
               <AvatarImage data-ai-hint="profile picture" src="https://placehold.co/40x40" />
               <AvatarFallback>
-                <User/>
+                <User />
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
