@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -26,6 +27,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "../ui/separator";
+import { Switch } from "../ui/switch";
 
 const invoiceItemSchema = z.object({
   description: z.string().min(1, "Description cannot be empty."),
@@ -40,7 +42,8 @@ const formSchema = z.object({
     required_error: "An invoice date is required.",
   }),
   items: z.array(invoiceItemSchema).min(1, "Please add at least one item."),
-  gstRate: z.coerce.number().min(0, "GST rate must be non-negative.").default(0),
+  isGstApplicable: z.boolean().default(true),
+  gstRate: z.coerce.number().min(0, "GST rate must be non-negative.").default(18),
 });
 
 type InvoiceFormValues = z.infer<typeof formSchema>;
@@ -56,6 +59,7 @@ export function InvoiceForm() {
       customerEmail: "",
       invoiceDate: new Date(),
       items: [{ description: "", quantity: 1, price: 0 }],
+      isGstApplicable: true,
       gstRate: 18,
     },
   });
@@ -66,9 +70,11 @@ export function InvoiceForm() {
   });
   
   const watchedItems = form.watch("items");
+  const isGstApplicable = form.watch("isGstApplicable");
   const watchedGstRate = form.watch("gstRate");
+
   const subtotal = watchedItems.reduce((acc, item) => acc + (item.quantity || 0) * (item.price || 0), 0);
-  const gstAmount = subtotal * (watchedGstRate / 100);
+  const gstAmount = isGstApplicable ? subtotal * (watchedGstRate / 100) : 0;
   const total = subtotal + gstAmount;
 
   async function onSubmit(data: InvoiceFormValues) {
@@ -222,30 +228,56 @@ export function InvoiceForm() {
         <Separator />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="md:col-span-2">
-                 <FormField
+            <div className="md:col-span-2 space-y-4">
+                <FormField
                     control={form.control}
-                    name="gstRate"
+                    name="isGstApplicable"
                     render={({ field }) => (
-                    <FormItem className="w-32">
-                        <FormLabel>GST Rate (%)</FormLabel>
-                        <FormControl>
-                        <Input type="number" placeholder="18" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                            <div className="space-y-0.5">
+                                <FormLabel className="text-base">
+                                Apply GST
+                                </FormLabel>
+                                <FormDescription>
+                                Toggle to include GST in the invoice calculation.
+                                </FormDescription>
+                            </div>
+                            <FormControl>
+                                <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                />
+                            </FormControl>
+                        </FormItem>
                     )}
-                />
+                    />
+                {isGstApplicable && (
+                    <FormField
+                        control={form.control}
+                        name="gstRate"
+                        render={({ field }) => (
+                        <FormItem className="w-32">
+                            <FormLabel>GST Rate (%)</FormLabel>
+                            <FormControl>
+                            <Input type="number" placeholder="18" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                )}
             </div>
             <div className="space-y-2 text-right">
                 <div className="flex justify-between">
                     <span className="text-muted-foreground">Subtotal</span>
                     <span>${subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
-                 <div className="flex justify-between">
-                    <span className="text-muted-foreground">GST ({watchedGstRate}%)</span>
-                    <span>${gstAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                </div>
+                {isGstApplicable && (
+                    <div className="flex justify-between">
+                        <span className="text-muted-foreground">GST ({watchedGstRate}%)</span>
+                        <span>${gstAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    </div>
+                )}
                 <Separator/>
                 <div className="flex justify-between text-xl font-bold">
                     <span>Total</span>
