@@ -68,7 +68,9 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
 
 
   const subtotal = invoice.items.reduce((acc, item) => acc + item.quantity * item.price, 0);
-  const gstAmount = subtotal * (invoice.gstRate / 100);
+  const totalDiscount = invoice.items.reduce((acc, item) => acc + (item.discount || 0), 0);
+  const totalAfterDiscount = subtotal - totalDiscount;
+  const gstAmount = invoice.gstRate > 0 ? totalAfterDiscount * (invoice.gstRate / 100) : 0;
 
 
   return (
@@ -119,6 +121,7 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
                 <TableHead>Description</TableHead>
                 <TableHead className="text-center">Quantity</TableHead>
                 <TableHead className="text-right">Unit Price</TableHead>
+                <TableHead className="text-right">Discount</TableHead>
                 <TableHead className="text-right">Total</TableHead>
               </TableRow>
             </TableHeader>
@@ -128,7 +131,8 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
                   <TableCell>{item.description}</TableCell>
                   <TableCell className="text-center">{item.quantity}</TableCell>
                   <TableCell className="text-right">${item.price.toFixed(2)}</TableCell>
-                  <TableCell className="text-right">${(item.quantity * item.price).toFixed(2)}</TableCell>
+                  <TableCell className="text-right">${(item.discount || 0).toFixed(2)}</TableCell>
+                  <TableCell className="text-right">${(item.quantity * item.price - (item.discount || 0)).toFixed(2)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -143,9 +147,15 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
                 <span>${subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span>GST ({invoice.gstRate}%)</span>
-                <span>${gstAmount.toFixed(2)}</span>
+                <span>Discount</span>
+                <span className="text-green-600">-${totalDiscount.toFixed(2)}</span>
               </div>
+               {invoice.gstRate > 0 && (
+                <div className="flex justify-between">
+                  <span>GST ({invoice.gstRate}%)</span>
+                  <span>${gstAmount.toFixed(2)}</span>
+                </div>
+              )}
               <Separator />
               <div className="flex justify-between font-bold text-lg">
                 <span>Total</span>

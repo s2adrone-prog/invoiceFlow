@@ -33,6 +33,7 @@ const invoiceItemSchema = z.object({
   description: z.string().min(1, "Description cannot be empty."),
   quantity: z.coerce.number().min(1, "Quantity must be at least 1."),
   price: z.coerce.number().min(0.01, "Price must be positive."),
+  discount: z.coerce.number().min(0, "Discount must be non-negative.").default(0),
 });
 
 const formSchema = z.object({
@@ -58,7 +59,7 @@ export function InvoiceForm() {
       customerName: "",
       customerEmail: "",
       invoiceDate: new Date(),
-      items: [{ description: "", quantity: 1, price: 0 }],
+      items: [{ description: "", quantity: 1, price: 0, discount: 0 }],
       isGstApplicable: true,
       gstRate: 18,
     },
@@ -74,8 +75,10 @@ export function InvoiceForm() {
   const watchedGstRate = form.watch("gstRate");
 
   const subtotal = watchedItems.reduce((acc, item) => acc + (item.quantity || 0) * (item.price || 0), 0);
-  const gstAmount = isGstApplicable ? subtotal * (watchedGstRate / 100) : 0;
-  const total = subtotal + gstAmount;
+  const totalDiscount = watchedItems.reduce((acc, item) => acc + (item.discount || 0), 0);
+  const totalAfterDiscount = subtotal - totalDiscount;
+  const gstAmount = isGstApplicable ? totalAfterDiscount * (watchedGstRate / 100) : 0;
+  const total = totalAfterDiscount + gstAmount;
 
   async function onSubmit(data: InvoiceFormValues) {
     // In a real app, this would be a server action.
@@ -207,6 +210,19 @@ export function InvoiceForm() {
                     </FormItem>
                   )}
                 />
+                <FormField
+                  control={form.control}
+                  name={`items.${index}.discount`}
+                  render={({ field }) => (
+                    <FormItem className="w-32">
+                       {index === 0 && <FormLabel>Discount</FormLabel>}
+                      <FormControl>
+                        <Input type="number" placeholder="0.00" {...field} />
+                      </FormControl>
+                       <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <Button type="button" variant="outline" size="icon" onClick={() => remove(index)} disabled={fields.length <= 1}>
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -218,7 +234,7 @@ export function InvoiceForm() {
             variant="outline"
             size="sm"
             className="mt-4"
-            onClick={() => append({ description: "", quantity: 1, price: 0 })}
+            onClick={() => append({ description: "", quantity: 1, price: 0, discount: 0 })}
           >
             <PlusCircle className="mr-2 h-4 w-4" />
             Add Item
@@ -271,6 +287,10 @@ export function InvoiceForm() {
                 <div className="flex justify-between">
                     <span className="text-muted-foreground">Subtotal</span>
                     <span>${subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                </div>
+                 <div className="flex justify-between">
+                    <span className="text-muted-foreground">Discount</span>
+                    <span className="text-green-600">-${totalDiscount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
                 {isGstApplicable && (
                     <div className="flex justify-between">
