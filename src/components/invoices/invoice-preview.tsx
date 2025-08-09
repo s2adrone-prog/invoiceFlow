@@ -8,17 +8,45 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Printer } from "lucide-react";
 import { Logo } from "@/components/icons";
 
+const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    aria-hidden="true"
+    fill="currentColor"
+    viewBox="0 0 448 512"
+    {...props}
+  >
+    <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 .5c58.7 0 111.3 22.5 151.1 63.8 40.2 41.8 62.1 96.2 62.1 156.1 0 107.4-87.1 194.5-194.5 194.5h-.1c-34.9 0-68.8-9.2-99.3-26.2l-7.1-4.2-74.3 19.6 19.9-72.6-4.5-7.4c-18.5-30.7-29.9-66.5-29.9-104.3C24.1 197.8 111.6 111 223.9 111zM223.9 321.4c-12.7 0-24.9-4-35.4-11.8l-1.5-.9-26.2 15.5 15.7-25.5-1-1.6c-10.4-16.6-16-35.6-16-55.8 0-48.4 39.3-87.7 87.7-87.7 23.4 0 45.4 9.1 61.9 25.6 16.5 16.5 25.6 38.5 25.6 61.9 0 48.4-39.3 87.7-87.7 87.7zm0-112.2c-15.1 0-29.2 5.8-39.6 16.2-10.4 10.4-16.2 24.5-16.2 39.6s5.8 29.2 16.2 39.6c10.4 10.4 24.5 16.2 39.6 16.2 15.1 0 29.2-5.8 39.6-16.2 10.4-10.4 16.2-24.5 16.2-39.6s-5.8-29.2-16.2-39.6c-10.4-10.4-24.5-16.2-39.6-16.2z"/>
+  </svg>
+);
+
+
 export function InvoicePreview({ invoice }: { invoice: Invoice }) {
   const handlePrint = () => {
     window.print();
   };
   
+  const handleWhatsApp = () => {
+    const message = `Hello ${invoice.customerName},
+  
+Here is your invoice ${invoice.invoiceNumber} for $${invoice.total.toFixed(2)}.
+  
+You can view the details here: ${window.location.href}
+  
+Thank you for your business!`;
+    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   const subtotal = invoice.items.reduce((acc, item) => acc + item.quantity * item.price, 0);
   const gstAmount = subtotal * (invoice.gstRate / 100);
 
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-8 print:p-0">
-       <div className="flex justify-end mb-4 print:hidden">
+       <div className="flex justify-end mb-4 print:hidden gap-2">
+        <Button onClick={handleWhatsApp}>
+          <WhatsAppIcon className="mr-2 h-4 w-4" />
+          WhatsApp
+        </Button>
         <Button onClick={handlePrint}>
           <Printer className="mr-2 h-4 w-4" />
           Print / Download
