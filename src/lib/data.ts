@@ -9,8 +9,8 @@ const invoices: Invoice[] = [
     invoiceDate: '2024-06-01',
     status: 'Paid',
     items: [
-      { id: '1', description: 'Web Development Services', quantity: 1, price: 5000, discount: 0 },
-      { id: '2', description: 'Hosting (1 year)', quantity: 1, price: 300, discount: 50 },
+      { id: '1', description: 'Web Development Services', quantity: 1, price: 5000, discountPercentage: 0 },
+      { id: '2', description: 'Hosting (1 year)', quantity: 1, price: 300, discountPercentage: 10 },
     ],
     gstRate: 18,
     total: 6136,
@@ -23,7 +23,7 @@ const invoices: Invoice[] = [
     invoiceDate: '2024-05-15',
     status: 'Pending',
     items: [
-      { id: '1', description: 'Mark 42 Armor Repair', quantity: 1, price: 100000, discount: 10000 },
+      { id: '1', description: 'Mark 42 Armor Repair', quantity: 1, price: 100000, discountPercentage: 10 },
     ],
     gstRate: 18,
     total: 106200,
@@ -36,8 +36,8 @@ const invoices: Invoice[] = [
     invoiceDate: '2024-04-01',
     status: 'Overdue',
     items: [
-      { id: '1', description: 'Grappling Hook', quantity: 5, price: 1000, discount: 0 },
-      { id: '2', description: 'Batarangs (Pack of 10)', quantity: 10, price: 500, discount: 0 },
+      { id: '1', description: 'Grappling Hook', quantity: 5, price: 1000, discountPercentage: 0 },
+      { id: '2', description: 'Batarangs (Pack of 10)', quantity: 10, price: 500, discountPercentage: 0 },
     ],
     gstRate: 12,
     total: 11200,
@@ -50,7 +50,7 @@ const invoices: Invoice[] = [
     invoiceDate: '2024-05-20',
     status: 'Paid',
     items: [
-      { id: '1', description: 'Neural Net Processor', quantity: 1, price: 75000, discount: 5000 },
+      { id: '1', description: 'Neural Net Processor', quantity: 1, price: 75000, discountPercentage: 5 },
     ],
     gstRate: 18,
     total: 82600,
@@ -63,7 +63,7 @@ const invoices: Invoice[] = [
     invoiceDate: '2024-06-10',
     status: 'Pending',
     items: [
-      { id: '1', description: 'Performance Enhancers', quantity: 100, price: 250, discount: 0 },
+      { id: '1', description: 'Performance Enhancers', quantity: 100, price: 250, discountPercentage: 0 },
     ],
     gstRate: 28,
     total: 32000,
@@ -76,7 +76,7 @@ const invoices: Invoice[] = [
     invoiceDate: '2024-03-12',
     status: 'Paid',
     items: [
-      { id: '1', description: 'Consulting Services', quantity: 40, price: 200, discount: 0 },
+      { id: '1', description: 'Consulting Services', quantity: 40, price: 200, discountPercentage: 0 },
     ],
     gstRate: 0,
     total: 8000,
@@ -89,7 +89,7 @@ const invoices: Invoice[] = [
     invoiceDate: '2024-02-28',
     status: 'Overdue',
     items: [
-      { id: '1', description: 'TPS Reports Cover Sheets', quantity: 500, price: 2.5, discount: 100 },
+      { id: '1', description: 'TPS Reports Cover Sheets', quantity: 500, price: 2.5, discountPercentage: 10 },
     ],
     gstRate: 5,
     total: 1207.5,

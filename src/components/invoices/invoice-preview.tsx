@@ -68,7 +68,11 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
 
 
   const subtotal = invoice.items.reduce((acc, item) => acc + item.quantity * item.price, 0);
-  const totalDiscount = invoice.items.reduce((acc, item) => acc + (item.discount || 0), 0);
+  const totalDiscount = invoice.items.reduce((acc, item) => {
+    const itemTotal = item.quantity * item.price;
+    const discountAmount = itemTotal * ((item.discountPercentage || 0) / 100);
+    return acc + discountAmount;
+  }, 0);
   const totalAfterDiscount = subtotal - totalDiscount;
   const gstAmount = invoice.gstRate > 0 ? totalAfterDiscount * (invoice.gstRate / 100) : 0;
 
@@ -126,15 +130,22 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {invoice.items.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell>{item.description}</TableCell>
-                  <TableCell className="text-center">{item.quantity}</TableCell>
-                  <TableCell className="text-right">${item.price.toFixed(2)}</TableCell>
-                  <TableCell className="text-right">${(item.discount || 0).toFixed(2)}</TableCell>
-                  <TableCell className="text-right">${(item.quantity * item.price - (item.discount || 0)).toFixed(2)}</TableCell>
-                </TableRow>
-              ))}
+              {invoice.items.map((item) => {
+                const itemTotal = item.quantity * item.price;
+                const discountAmount = itemTotal * ((item.discountPercentage || 0) / 100);
+                const totalAfterDiscount = itemTotal - discountAmount;
+                return (
+                  <TableRow key={item.id}>
+                    <TableCell>{item.description}</TableCell>
+                    <TableCell className="text-center">{item.quantity}</TableCell>
+                    <TableCell className="text-right">${item.price.toFixed(2)}</TableCell>
+                    <TableCell className="text-right">
+                      ${discountAmount.toFixed(2)} ({item.discountPercentage || 0}%)
+                    </TableCell>
+                    <TableCell className="text-right">${totalAfterDiscount.toFixed(2)}</TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
 

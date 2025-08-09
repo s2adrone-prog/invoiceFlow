@@ -33,7 +33,11 @@ const invoiceItemSchema = z.object({
   description: z.string().min(1, "Description cannot be empty."),
   quantity: z.coerce.number().min(1, "Quantity must be at least 1."),
   price: z.coerce.number().min(0.01, "Price must be positive."),
-  discount: z.coerce.number().min(0, "Discount must be non-negative.").default(0),
+  discountPercentage: z.coerce
+    .number()
+    .min(0, "Discount must be non-negative.")
+    .max(100, "Discount cannot be over 100%.")
+    .default(0),
 });
 
 const formSchema = z.object({
@@ -59,7 +63,7 @@ export function InvoiceForm() {
       customerName: "",
       customerEmail: "",
       invoiceDate: new Date(),
-      items: [{ description: "", quantity: 1, price: 0, discount: 0 }],
+      items: [{ description: "", quantity: 1, price: 0, discountPercentage: 0 }],
       isGstApplicable: true,
       gstRate: 18,
     },
@@ -75,7 +79,11 @@ export function InvoiceForm() {
   const watchedGstRate = form.watch("gstRate");
 
   const subtotal = watchedItems.reduce((acc, item) => acc + (item.quantity || 0) * (item.price || 0), 0);
-  const totalDiscount = watchedItems.reduce((acc, item) => acc + (item.discount || 0), 0);
+  const totalDiscount = watchedItems.reduce((acc, item) => {
+    const itemTotal = (item.quantity || 0) * (item.price || 0);
+    const discountAmount = itemTotal * ((item.discountPercentage || 0) / 100);
+    return acc + discountAmount;
+  }, 0);
   const totalAfterDiscount = subtotal - totalDiscount;
   const gstAmount = isGstApplicable ? totalAfterDiscount * (watchedGstRate / 100) : 0;
   const total = totalAfterDiscount + gstAmount;
@@ -212,12 +220,12 @@ export function InvoiceForm() {
                 />
                 <FormField
                   control={form.control}
-                  name={`items.${index}.discount`}
+                  name={`items.${index}.discountPercentage`}
                   render={({ field }) => (
                     <FormItem className="w-32">
-                       {index === 0 && <FormLabel>Discount</FormLabel>}
+                       {index === 0 && <FormLabel>Discount (%)</FormLabel>}
                       <FormControl>
-                        <Input type="number" placeholder="0.00" {...field} />
+                        <Input type="number" placeholder="0" {...field} />
                       </FormControl>
                        <FormMessage />
                     </FormItem>
@@ -234,7 +242,7 @@ export function InvoiceForm() {
             variant="outline"
             size="sm"
             className="mt-4"
-            onClick={() => append({ description: "", quantity: 1, price: 0, discount: 0 })}
+            onClick={() => append({ description: "", quantity: 1, price: 0, discountPercentage: 0 })}
           >
             <PlusCircle className="mr-2 h-4 w-4" />
             Add Item

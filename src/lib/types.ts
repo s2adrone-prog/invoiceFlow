@@ -3,7 +3,7 @@ export interface InvoiceItem {
   description: string;
   quantity: number;
   price: number;
-  discount: number;
+  discountPercentage: number;
 }
 
 export interface Invoice {
