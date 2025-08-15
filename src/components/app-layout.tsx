@@ -46,7 +46,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   // Don't render layout for auth pages
-  const authPages = ['/login', '/signup'];
+  const authPages = ['/login', '/signup', '/forgot-password'];
   if (authPages.includes(pathname)) {
     return <>{children}</>;
   }
