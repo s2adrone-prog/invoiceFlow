@@ -26,8 +26,8 @@ export default function ForgotPasswordPage() {
         setIsLoading(false);
         setIsSubmitted(true);
         toast({
-            title: 'Request Sent',
-            description: 'If an account with that email exists, we have sent a password reset link.',
+            title: 'Password Reset Simulation',
+            description: 'In a real app, an email would be sent if the account exists.',
         });
     }, 1500);
   };
@@ -42,7 +42,7 @@ export default function ForgotPasswordPage() {
           <CardTitle>Forgot Your Password?</CardTitle>
           <CardDescription>
             {isSubmitted 
-              ? "A password reset link has been sent to your email address (if it exists in our system)."
+              ? "If an account with this email exists, a password reset link would have been sent."
               : "No problem. Enter your email below and we'll send you a link to reset it."
             }
             </CardDescription>
