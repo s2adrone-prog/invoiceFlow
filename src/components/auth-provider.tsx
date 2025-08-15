@@ -18,12 +18,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
+    // This check is to prevent errors during server-side rendering
+    if (typeof window === 'undefined') {
+        setLoading(false);
+        return;
+    }
+
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
     const publicPaths = ['/login', '/signup'];
     const pathIsPublic = publicPaths.includes(pathname);
 
     if (currentUser) {
       setUser(currentUser);
+      if (pathIsPublic) {
+        router.push('/');
+      }
     } else if (!pathIsPublic) {
       router.push('/login');
     }
@@ -37,19 +46,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     router.push('/login');
   };
 
-  if (loading) {
-    return (
-        <div className="flex h-screen items-center justify-center">
-            <div className="h-16 w-16 animate-spin rounded-full border-4 border-solid border-primary border-t-transparent"></div>
-        </div>
-    )
-  }
-
   const publicPaths = ['/login', '/signup'];
   const pathIsPublic = publicPaths.includes(pathname);
 
-  if (pathIsPublic && user) {
-    router.push('/');
+  if (loading || (!user && !pathIsPublic)) {
     return (
         <div className="flex h-screen items-center justify-center">
             <div className="h-16 w-16 animate-spin rounded-full border-4 border-solid border-primary border-t-transparent"></div>
@@ -57,15 +57,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     )
   }
 
-  if (pathIsPublic || user) {
-    return (
-      <AuthContext.Provider value={{ user, loading, logout }}>
-        {children}
-      </AuthContext.Provider>
-    );
+  if (user && pathIsPublic) {
+    // While redirecting, show a loader
+     return (
+        <div className="flex h-screen items-center justify-center">
+            <div className="h-16 w-16 animate-spin rounded-full border-4 border-solid border-primary border-t-transparent"></div>
+        </div>
+    )
   }
-
-  return null;
+  
+  return (
+    <AuthContext.Provider value={{ user, loading, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export const useAuth = () => {
