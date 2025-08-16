@@ -8,7 +8,8 @@ import { InvoicePreview } from '@/components/invoices/invoice-preview';
 import type { Invoice } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
 
-export default function InvoicePage({ params: { id } }: { params: { id: string } }) {
+export default function InvoicePage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const [invoice, setInvoice] = useState<Invoice | null | undefined>(undefined);
 
   useEffect(() => {
