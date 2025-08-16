@@ -1,6 +1,9 @@
-import type { Invoice, InvoiceItem } from './types';
 
-const invoices: Invoice[] = [
+"use client"
+
+import type { Invoice } from './types';
+
+const initialInvoices: Invoice[] = [
   {
     id: '1',
     invoiceNumber: 'INV-001',
@@ -103,26 +106,45 @@ const invoices: Invoice[] = [
   }
 ];
 
+const getStoredInvoices = (): Invoice[] => {
+  if (typeof window === 'undefined') {
+    return initialInvoices;
+  }
+  const stored = localStorage.getItem('invoices');
+  if (stored) {
+    return JSON.parse(stored);
+  }
+  localStorage.setItem('invoices', JSON.stringify(initialInvoices));
+  return initialInvoices;
+};
+
+const setStoredInvoices = (invoices: Invoice[]) => {
+    localStorage.setItem('invoices', JSON.stringify(invoices));
+}
+
 // Simulate API calls
 export async function getInvoices(): Promise<Invoice[]> {
   return new Promise((resolve) => {
     setTimeout(() => {
+      const invoices = getStoredInvoices();
       resolve([...invoices].sort((a, b) => new Date(b.invoiceDate).getTime() - new Date(a.invoiceDate).getTime()));
-    }, 500);
+    }, 200);
   });
 }
 
 export async function getInvoiceById(id: string): Promise<Invoice | undefined> {
   return new Promise((resolve) => {
     setTimeout(() => {
+        const invoices = getStoredInvoices();
       resolve(invoices.find((invoice) => invoice.id === id));
-    }, 300);
+    }, 100);
   });
 }
 
 export async function saveInvoice(invoiceData: Omit<Invoice, 'id' | 'invoiceNumber' | 'status'>): Promise<Invoice> {
     return new Promise((resolve) => {
         setTimeout(() => {
+            const invoices = getStoredInvoices();
             const latestInvoiceNumber = invoices.reduce((max, inv) => {
                 const num = parseInt(inv.invoiceNumber.split('-')[1]);
                 return num > max ? num : max;
@@ -130,13 +152,14 @@ export async function saveInvoice(invoiceData: Omit<Invoice, 'id' | 'invoiceNumb
 
             const newInvoice: Invoice = {
                 ...invoiceData,
-                id: `${Date.now()}`, // Use a more unique ID
+                id: `${Date.now()}`,
                 invoiceNumber: `INV-${(latestInvoiceNumber + 1).toString().padStart(3, '0')}`,
                 status: 'Pending', 
                 items: invoiceData.items.map((item, index) => ({ ...item, id: `${Date.now()}-${index}` })),
             };
-            invoices.unshift(newInvoice);
+            const updatedInvoices = [newInvoice, ...invoices];
+            setStoredInvoices(updatedInvoices);
             resolve(newInvoice);
-        }, 500);
+        }, 200);
     });
 }

@@ -1,13 +1,36 @@
-import { CreditCard, DollarSign, Package } from 'lucide-react';
+
+"use client";
+
+import { useEffect, useState } from 'react';
+import { CreditCard, DollarSign, Package, Loader2 } from 'lucide-react';
 
 import { getInvoices } from '@/lib/data';
+import type { Invoice } from '@/lib/types';
 import { StatCard } from '@/components/dashboard/stat-card';
 import { RecentInvoices } from '@/components/dashboard/recent-invoices';
 import { SalesChart } from '@/components/dashboard/sales-chart';
 
 
-export default async function DashboardPage() {
-  const invoices = await getInvoices();
+export default function DashboardPage() {
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      const data = await getInvoices();
+      setInvoices(data);
+      setIsLoading(false);
+    }
+    fetchData();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[80vh] items-center justify-center">
+        <Loader2 className="h-16 w-16 animate-spin" />
+      </div>
+    );
+  }
 
   const totalSales = invoices.reduce((acc, invoice) => acc + invoice.total, 0);
   const outstandingPayments = invoices

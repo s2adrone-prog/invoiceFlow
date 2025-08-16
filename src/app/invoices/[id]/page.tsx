@@ -1,11 +1,33 @@
+
+"use client";
+
+import { useEffect, useState } from 'react';
 import { notFound } from 'next/navigation';
 import { getInvoiceById } from '@/lib/data';
 import { InvoicePreview } from '@/components/invoices/invoice-preview';
+import type { Invoice } from '@/lib/types';
+import { Loader2 } from 'lucide-react';
 
-export default async function InvoicePage({ params }: { params: { id: string } }) {
-  const invoice = await getInvoiceById(params.id);
+export default function InvoicePage({ params }: { params: { id: string } }) {
+  const [invoice, setInvoice] = useState<Invoice | null | undefined>(undefined);
 
-  if (!invoice) {
+  useEffect(() => {
+    async function fetchData() {
+      const data = await getInvoiceById(params.id);
+      setInvoice(data);
+    }
+    fetchData();
+  }, [params.id]);
+
+  if (invoice === undefined) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-16 w-16 animate-spin" />
+      </div>
+    );
+  }
+
+  if (invoice === null) {
     notFound();
   }
 

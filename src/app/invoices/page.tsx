@@ -1,11 +1,33 @@
-import { unstable_noStore as noStore } from 'next/cache';
+
+"use client";
+
+import { useEffect, useState } from 'react';
 import { InvoicesTable } from "@/components/invoices/invoices-table";
 import { getInvoices } from "@/lib/data";
+import type { Invoice } from '@/lib/types';
+import { Loader2 } from 'lucide-react';
 
-export default async function InvoicesPage() {
-  // This prevents the page from being cached, ensuring the invoice list is always fresh.
-  noStore();
-  
-  const invoices = await getInvoices();
+export default function InvoicesPage() {
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchInvoices = async () => {
+      const data = await getInvoices();
+      setInvoices(data);
+      setIsLoading(false);
+    };
+
+    fetchInvoices();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[80vh] items-center justify-center">
+        <Loader2 className="h-16 w-16 animate-spin" />
+      </div>
+    );
+  }
+
   return <InvoicesTable invoices={invoices} />;
 }
