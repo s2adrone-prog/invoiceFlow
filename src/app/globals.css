@@ -83,3 +83,19 @@
     font-family: 'Open Sans', sans-serif;
   }
 }
+
+@layer utilities {
+  @media print {
+    @page {
+      size: A6;
+      margin: 0;
+    }
+    body {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .print\:p-4 {
+      padding: 1rem;
+    }
+  }
+}

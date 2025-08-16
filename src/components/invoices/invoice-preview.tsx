@@ -36,7 +36,8 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
     const originalColors = new Map<HTMLElement, string>();
     const allElements = input.querySelectorAll<HTMLElement>('*');
     allElements.forEach(el => {
-        originalColors.set(el, el.style.color);
+        const style = window.getComputedStyle(el);
+        originalColors.set(el, style.color);
         el.style.color = 'black';
     });
 
@@ -94,7 +95,7 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
           Print / Download
         </Button>
       </div>
-      <Card ref={invoiceRef} className="print:shadow-none print:border-none p-4">
+      <Card ref={invoiceRef} className="print:shadow-none print:border-none print:p-4">
         <CardHeader>
           <div className="flex justify-between items-start">
             <div>
