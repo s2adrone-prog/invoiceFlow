@@ -1,5 +1,4 @@
-// In a real app, you'd connect to a database
-const users: any[] = [];
+import { users } from '@/lib/mock-db';
 
 export async function POST(req: Request) {
   try {
@@ -18,6 +17,8 @@ export async function POST(req: Request) {
     // In a real app, you would hash the password
     const newUser = { id: Date.now().toString(), email, password, name };
     users.push(newUser);
+
+    console.log('Users after signup:', users);
 
     return new Response(JSON.stringify({ message: 'User registered successfully' }), { status: 201 });
   } catch (error) {

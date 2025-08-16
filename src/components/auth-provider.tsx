@@ -3,8 +3,13 @@
 import { useEffect, useState, createContext, useContext, ReactNode } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
+interface User {
+  name: string;
+  email: string;
+}
+
 interface AuthContextType {
-  user: any;
+  user: User | null;
   loading: boolean;
   logout: () => void;
 }
@@ -12,7 +17,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
@@ -20,17 +25,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const publicPaths = ['/login', '/signup', '/forgot-password'];
 
   useEffect(() => {
-    // This check is to prevent errors during server-side rendering
     if (typeof window === 'undefined') {
         setLoading(false);
         return;
     }
 
     const token = localStorage.getItem('token');
+    const userData = localStorage.getItem('user');
     const pathIsPublic = publicPaths.includes(pathname);
 
-    if (token) {
-      setUser({ isAuthenticated: true }); // Indicate authenticated
+    if (token && userData) {
+      setUser(JSON.parse(userData));
       if (pathIsPublic) {
         router.push('/');
       }
@@ -38,10 +43,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       router.push('/login');
     }
     setLoading(false);
-  }, [pathname, router]);
+  }, [pathname]);
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setUser(null);
     router.push('/login');
   };

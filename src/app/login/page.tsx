@@ -34,11 +34,13 @@ export default function LoginPage() {
 
       if (response.ok) {
         localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user)); // Save user data
         toast({
           title: 'Success',
           description: 'Logged in successfully.',
         });
-        router.push('/');
+        // Use window.location to force a full refresh, ensuring AuthProvider re-evaluates
+        window.location.href = '/';
       } else {
         toast({
           title: 'Error',

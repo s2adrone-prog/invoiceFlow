@@ -1,7 +1,4 @@
-// This is a mock database. In a real app, you'd connect to a real database.
-const users = [
-     { id: '1', email: 'm@example.com', password: 'password', name: 'User' }
-];
+import { users } from '@/lib/mock-db';
 
 export async function POST(req: Request) {
   try {
