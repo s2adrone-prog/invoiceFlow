@@ -39,8 +39,23 @@ export default function SignupPage() {
           description: data.message || 'Account created successfully.',
         });
         router.push('/login'); // Redirect to login page after successful signup
+      } else {
+        toast({
+            title: 'Error',
+            description: data.message || 'Could not create account.',
+            variant: 'destructive',
+        });
       }
-    }, 1000);
+    } catch (error) {
+      console.error('Signup error:', error);
+      toast({
+        title: 'Error',
+        description: 'An error occurred during signup. Please try again later.',
+        variant: 'destructive',
+      });
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   return (
