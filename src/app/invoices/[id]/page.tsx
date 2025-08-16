@@ -9,16 +9,15 @@ import type { Invoice } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
 
 export default function InvoicePage({ params }: { params: { id: string } }) {
-  const { id } = params;
   const [invoice, setInvoice] = useState<Invoice | null | undefined>(undefined);
 
   useEffect(() => {
     async function fetchData() {
-      const data = await getInvoiceById(id);
+      const data = await getInvoiceById(params.id);
       setInvoice(data);
     }
     fetchData();
-  }, [id]);
+  }, [params.id]);
 
   if (invoice === undefined) {
     return (
