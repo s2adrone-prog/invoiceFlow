@@ -22,40 +22,23 @@ export default function SignupPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    try {
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password, name }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        toast({
-          title: 'Success',
-          description: data.message || 'Account created successfully.',
-        });
-        router.push('/login');
-      } else {
-        toast({
-            title: 'Error',
-            description: data.message || 'Could not create account.',
-            variant: 'destructive',
-        });
-      }
-    } catch (error) {
-      console.error('Signup error:', error);
-      toast({
-        title: 'Error',
-        description: 'An error occurred during signup. Please try again later.',
-        variant: 'destructive',
-      });
-    } finally {
+    // Simulate API call
+    setTimeout(() => {
+        if(name && email && password) {
+            toast({
+              title: 'Success',
+              description: 'Account created successfully. You can now log in.',
+            });
+            router.push('/login');
+        } else {
+            toast({
+                title: 'Error',
+                description: 'Please fill in all fields.',
+                variant: 'destructive',
+            });
+        }
         setIsLoading(false);
-    }
+    }, 1000);
   };
 
   return (

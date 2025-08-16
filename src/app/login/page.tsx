@@ -11,8 +11,8 @@ import Link from 'next/link';
 import { Logo } from '@/components/icons';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('m@example.com');
+  const [password, setPassword] = useState('password');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
@@ -21,43 +21,26 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user)); // Save user data
-        toast({
-          title: 'Success',
-          description: 'Logged in successfully.',
-        });
-        // Use window.location to force a full refresh, ensuring AuthProvider re-evaluates
-        window.location.href = '/';
-      } else {
-        toast({
-          title: 'Error',
-          description: data.message || 'Invalid email or password.',
-          variant: 'destructive',
-        });
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      toast({
-        title: 'Error',
-        description: 'An error occurred during login. Please try again later.',
-        variant: 'destructive',
-      });
-    } finally {
-        setIsLoading(false);
-    }
+    // Simulate API call
+    setTimeout(() => {
+        if (email && password) {
+            const user = { name: 'Demo User', email: email };
+            localStorage.setItem('token', 'fake-jwt-token');
+            localStorage.setItem('user', JSON.stringify(user));
+            toast({
+                title: 'Success',
+                description: 'Logged in successfully.',
+            });
+            window.location.href = '/';
+        } else {
+            toast({
+                title: 'Error',
+                description: 'Invalid email or password.',
+                variant: 'destructive',
+            });
+             setIsLoading(false);
+        }
+    }, 1000);
   };
 
   return (

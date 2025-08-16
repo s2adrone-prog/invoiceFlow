@@ -35,16 +35,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const pathIsPublic = publicPaths.includes(pathname);
   
     if (token && userData) {
-      const parsedUser = JSON.parse(userData);
-      setUser(parsedUser);
-      // If the user is logged in and tries to access a public page,
-      // redirect them to the home page.
-      if (pathIsPublic) {
-        router.replace('/');
+      try {
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
+        if (pathIsPublic) {
+          router.replace('/');
+        }
+      } catch (e) {
+        console.error("Failed to parse user data from localStorage", e);
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        if (!pathIsPublic) {
+          router.replace('/login');
+        }
       }
     } else if (!pathIsPublic) {
-      // If the user is not logged in and the path is not public,
-      // redirect them to the login page.
       router.replace('/login');
     }
   
@@ -56,7 +61,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setUser(null);
-    router.push('/login');
+    // Use window.location to force a full refresh, ensuring AuthProvider re-evaluates
+    window.location.href = '/login';
   };
 
   const pathIsPublic = publicPaths.includes(pathname);

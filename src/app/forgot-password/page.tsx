@@ -20,39 +20,23 @@ export default function ForgotPasswordPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    try {
-        const response = await fetch('/api/auth/forgot-password', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
+    // Simulate API call
+    setTimeout(() => {
+        if (email) {
             setIsSubmitted(true);
-             toast({
+            toast({
                 title: 'Password Reset',
                 description: 'In a real app, an email would be sent if the account exists.',
             });
         } else {
              toast({
                 title: 'Error',
-                description: data.message || 'Could not process request.',
+                description: 'Please enter an email address.',
                 variant: 'destructive',
             });
         }
-    } catch(error) {
-         toast({
-            title: 'Error',
-            description: 'An error occurred. Please try again.',
-            variant: 'destructive',
-        });
-    } finally {
         setIsLoading(false);
-    }
+    }, 1000);
   };
 
   return (
