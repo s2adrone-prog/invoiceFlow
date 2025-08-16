@@ -2,22 +2,26 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import { getInvoiceById } from '@/lib/data';
 import { InvoicePreview } from '@/components/invoices/invoice-preview';
 import type { Invoice } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
 
-export default function InvoicePage({ params }: { params: { id: string } }) {
+export default function InvoicePage() {
+  const params = useParams();
+  const id = Array.isArray(params.id) ? params.id[0] : params.id;
   const [invoice, setInvoice] = useState<Invoice | null | undefined>(undefined);
 
   useEffect(() => {
     async function fetchData() {
-      const data = await getInvoiceById(params.id);
-      setInvoice(data);
+      if (id) {
+        const data = await getInvoiceById(id);
+        setInvoice(data);
+      }
     }
     fetchData();
-  }, [params.id]);
+  }, [id]);
 
   if (invoice === undefined) {
     return (
