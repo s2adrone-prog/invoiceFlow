@@ -25,25 +25,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const publicPaths = ['/login', '/signup', '/forgot-password'];
 
   useEffect(() => {
+    // This effect should only run on the client
     if (typeof window === 'undefined') {
-        setLoading(false);
-        return;
+      return;
     }
-
+  
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
     const pathIsPublic = publicPaths.includes(pathname);
-
+  
     if (token && userData) {
-      setUser(JSON.parse(userData));
+      const parsedUser = JSON.parse(userData);
+      setUser(parsedUser);
+      // If the user is logged in and tries to access a public page,
+      // redirect them to the home page.
       if (pathIsPublic) {
-        router.push('/');
+        router.replace('/');
       }
     } else if (!pathIsPublic) {
-      router.push('/login');
+      // If the user is not logged in and the path is not public,
+      // redirect them to the login page.
+      router.replace('/login');
     }
+  
     setLoading(false);
-  }, [pathname]);
+  
+  }, [pathname, router]);
 
   const logout = () => {
     localStorage.removeItem('token');
@@ -54,6 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const pathIsPublic = publicPaths.includes(pathname);
 
+  // While loading, or if a user is not authenticated on a protected route, show a loader.
   if (loading || (!user && !pathIsPublic)) {
     return (
         <div className="flex h-screen items-center justify-center">
