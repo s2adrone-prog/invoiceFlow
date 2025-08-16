@@ -17,22 +17,28 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const user = users.find((u: any) => u.email === email && u.password === password);
+    try {
+      const response = await fetch('http://localhost:5000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-      if (user) {
-        localStorage.setItem('currentUser', JSON.stringify(user));
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('token', data.token); // For production, consider more secure storage like HTTP-only cookies
         toast({
           title: 'Success',
           description: 'Logged in successfully.',
         });
-        router.push('/');
+        router.push('/'); // Redirect to the home page or dashboard
       } else {
         toast({
           title: 'Error',
@@ -41,7 +47,15 @@ export default function LoginPage() {
         });
         setIsLoading(false);
       }
-    }, 1000);
+    } catch (error) {
+      console.error('Login error:', error);
+      toast({
+        title: 'Error',
+        description: 'An error occurred during login. Please try again later.',
+        variant: 'destructive',
+      });
+      setIsLoading(false);
+    }
   };
 
   return (

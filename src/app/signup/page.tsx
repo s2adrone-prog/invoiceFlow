@@ -18,32 +18,27 @@ export default function SignupPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const userExists = users.some((u: any) => u.email === email);
+    try {
+      const response = await fetch('http://localhost:5000/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password, name }),
+      });
 
-      if (userExists) {
-        toast({
-          title: 'Error',
-          description: 'An account with this email already exists.',
-          variant: 'destructive',
-        });
-        setIsLoading(false);
-      } else {
-        const newUser = { id: Date.now().toString(), name, email, password };
-        users.push(newUser);
-        localStorage.setItem('users', JSON.stringify(users));
-        localStorage.setItem('currentUser', JSON.stringify(newUser));
+      const data = await response.json();
+
+      if (response.ok) {
         toast({
           title: 'Success',
-          description: 'Account created successfully.',
+          description: data.message || 'Account created successfully.',
         });
-        router.push('/');
+        router.push('/login'); // Redirect to login page after successful signup
       }
     }, 1000);
   };

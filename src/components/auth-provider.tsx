@@ -26,23 +26,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
     }
 
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+    const token = localStorage.getItem('token');
     const pathIsPublic = publicPaths.includes(pathname);
 
-    if (currentUser) {
-      setUser(currentUser);
+    if (token) {
+      setUser({ isAuthenticated: true }); // Indicate authenticated
       if (pathIsPublic) {
         router.push('/');
       }
     } else if (!pathIsPublic) {
       router.push('/login');
     }
-    
     setLoading(false);
   }, [pathname, router]);
 
   const logout = () => {
-    localStorage.removeItem('currentUser');
+    localStorage.removeItem('token');
     setUser(null);
     router.push('/login');
   };
