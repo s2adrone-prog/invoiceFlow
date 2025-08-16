@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useRef } from "react";
@@ -28,14 +29,10 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
   const invoiceRef = useRef<HTMLDivElement>(null);
 
   const handlePrint = () => {
-    window.print();
-  };
-  
-  const handleGeneratePdf = async () => {
     const input = invoiceRef.current;
     if (!input) return;
 
-    // Temporarily make all text black for the PDF
+    // Temporarily make all text black for printing
     const originalColors = new Map<HTMLElement, string>();
     const allElements = input.querySelectorAll<HTMLElement>('*');
     allElements.forEach(el => {
@@ -43,14 +40,9 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
         el.style.color = 'black';
     });
 
+    window.print();
 
-    const canvas = await html2canvas(input, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#ffffff'
-    });
-    
-    // Restore original colors
+    // Restore original colors after printing
     allElements.forEach(el => {
         const originalColor = originalColors.get(el);
         if (originalColor) {
@@ -59,7 +51,18 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
             el.style.removeProperty('color');
         }
     });
+  };
+  
+  const handleGeneratePdf = async () => {
+    const input = invoiceRef.current;
+    if (!input) return;
 
+    const canvas = await html2canvas(input, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff'
+    });
+    
     const imgData = canvas.toDataURL('image/png');
     const pdf = new jsPDF('p', 'px', [canvas.width, canvas.height], true);
     pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height, undefined, 'FAST');
