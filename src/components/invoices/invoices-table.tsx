@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -120,6 +121,11 @@ export function InvoicesTable({ invoices }: { invoices: Invoice[] }) {
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    initialState: {
+        pagination: {
+            pageSize: 15,
+        }
+    },
     state: {
       sorting,
       columnFilters,
@@ -218,6 +224,10 @@ export function InvoicesTable({ invoices }: { invoices: Invoice[] }) {
           </Table>
         </div>
         <div className="flex items-center justify-end space-x-2 py-4">
+            <div className="flex-1 text-sm text-muted-foreground">
+                Page {table.getState().pagination.pageIndex + 1} of{" "}
+                {table.getPageCount()}
+            </div>
           <Button
             variant="outline"
             size="sm"
