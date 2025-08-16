@@ -87,7 +87,7 @@
 @layer utilities {
   @media print {
     @page {
-      size: A6;
+      size: A5;
       margin: 0;
     }
     body {
