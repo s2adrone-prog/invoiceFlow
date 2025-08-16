@@ -107,7 +107,7 @@ const invoices: Invoice[] = [
 export async function getInvoices(): Promise<Invoice[]> {
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve([...invoices]);
+      resolve([...invoices].sort((a, b) => new Date(b.invoiceDate).getTime() - new Date(a.invoiceDate).getTime()));
     }, 500);
   });
 }
@@ -130,10 +130,10 @@ export async function saveInvoice(invoiceData: Omit<Invoice, 'id' | 'invoiceNumb
 
             const newInvoice: Invoice = {
                 ...invoiceData,
-                id: (invoices.length + 1).toString(),
+                id: `${Date.now()}`, // Use a more unique ID
                 invoiceNumber: `INV-${(latestInvoiceNumber + 1).toString().padStart(3, '0')}`,
                 status: 'Pending', 
-                items: invoiceData.items.map((item, index) => ({ ...item, id: (index + 1).toString() })),
+                items: invoiceData.items.map((item, index) => ({ ...item, id: `${Date.now()}-${index}` })),
             };
             invoices.unshift(newInvoice);
             resolve(newInvoice);
