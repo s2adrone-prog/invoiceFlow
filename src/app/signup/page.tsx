@@ -23,7 +23,7 @@ export default function SignupPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/signup', {
+      const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ export default function SignupPage() {
           title: 'Success',
           description: data.message || 'Account created successfully.',
         });
-        router.push('/login'); // Redirect to login page after successful signup
+        router.push('/login');
       } else {
         toast({
             title: 'Error',

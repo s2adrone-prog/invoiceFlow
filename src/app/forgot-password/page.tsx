@@ -16,20 +16,43 @@ export default function ForgotPasswordPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // In a real app, you'd send a reset link to the user's email.
-    // Here, we just simulate the success state.
-    setTimeout(() => {
-        setIsLoading(false);
-        setIsSubmitted(true);
-        toast({
-            title: 'Password Reset Simulation',
-            description: 'In a real app, an email would be sent if the account exists.',
+    try {
+        const response = await fetch('/api/auth/forgot-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email }),
         });
-    }, 1500);
+
+        const data = await response.json();
+
+        if (response.ok) {
+            setIsSubmitted(true);
+             toast({
+                title: 'Password Reset',
+                description: 'In a real app, an email would be sent if the account exists.',
+            });
+        } else {
+             toast({
+                title: 'Error',
+                description: data.message || 'Could not process request.',
+                variant: 'destructive',
+            });
+        }
+    } catch(error) {
+         toast({
+            title: 'Error',
+            description: 'An error occurred. Please try again.',
+            variant: 'destructive',
+        });
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   return (

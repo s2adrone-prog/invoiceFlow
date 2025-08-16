@@ -22,7 +22,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/login', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -33,19 +33,18 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('token', data.token); // For production, consider more secure storage like HTTP-only cookies
+        localStorage.setItem('token', data.token);
         toast({
           title: 'Success',
           description: 'Logged in successfully.',
         });
-        router.push('/'); // Redirect to the home page or dashboard
+        router.push('/');
       } else {
         toast({
           title: 'Error',
-          description: 'Invalid email or password.',
+          description: data.message || 'Invalid email or password.',
           variant: 'destructive',
         });
-        setIsLoading(false);
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -54,7 +53,8 @@ export default function LoginPage() {
         description: 'An error occurred during login. Please try again later.',
         variant: 'destructive',
       });
-      setIsLoading(false);
+    } finally {
+        setIsLoading(false);
     }
   };
 
