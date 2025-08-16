@@ -3,9 +3,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import * as z from "zod";
-import { CalendarIcon, PlusCircle, Trash2 } from "lucide-react";
+import { CalendarIcon, PlusCircle, Trash2, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "../ui/separator";
 import { Switch } from "../ui/switch";
+import { saveInvoice } from "@/lib/data";
 
 const invoiceItemSchema = z.object({
   description: z.string().min(1, "Description cannot be empty."),
@@ -57,6 +59,7 @@ type InvoiceFormValues = z.infer<typeof formSchema>;
 export function InvoiceForm() {
   const router = useRouter();
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<InvoiceFormValues>({
     resolver: zodResolver(formSchema),
@@ -91,14 +94,31 @@ export function InvoiceForm() {
   const total = totalAfterDiscount + gstAmount;
 
   async function onSubmit(data: InvoiceFormValues) {
-    // In a real app, this would be a server action.
-    console.log(data);
-    toast({
-      title: "Invoice Created",
-      description: "The new invoice has been successfully created.",
-    });
-    // In a real app you would get the new ID back and redirect to it
-    router.push("/invoices");
+    setIsLoading(true);
+    try {
+      const invoiceToSave = {
+        ...data,
+        invoiceDate: data.invoiceDate.toISOString(),
+        gstRate: data.isGstApplicable ? data.gstRate : 0,
+        total: total,
+      };
+
+      const newInvoice = await saveInvoice(invoiceToSave);
+      
+      toast({
+        title: "Invoice Created",
+        description: `Invoice ${newInvoice.invoiceNumber} has been successfully created.`,
+      });
+      router.push("/invoices");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create invoice. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+        setIsLoading(false);
+    }
   }
 
   return (
@@ -330,7 +350,10 @@ export function InvoiceForm() {
         </div>
 
         <div className="flex justify-end">
-          <Button type="submit">Create Invoice</Button>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isLoading ? "Creating..." : "Create Invoice"}
+            </Button>
         </div>
       </form>
     </Form>

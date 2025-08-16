@@ -1,4 +1,4 @@
-import type { Invoice } from './types';
+import type { Invoice, InvoiceItem } from './types';
 
 const invoices: Invoice[] = [
   {
@@ -107,7 +107,7 @@ const invoices: Invoice[] = [
 export async function getInvoices(): Promise<Invoice[]> {
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve(invoices);
+      resolve([...invoices]);
     }, 500);
   });
 }
@@ -118,4 +118,25 @@ export async function getInvoiceById(id: string): Promise<Invoice | undefined> {
       resolve(invoices.find((invoice) => invoice.id === id));
     }, 300);
   });
+}
+
+export async function saveInvoice(invoiceData: Omit<Invoice, 'id' | 'invoiceNumber' | 'status'>): Promise<Invoice> {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            const latestInvoiceNumber = invoices.reduce((max, inv) => {
+                const num = parseInt(inv.invoiceNumber.split('-')[1]);
+                return num > max ? num : max;
+            }, 0);
+
+            const newInvoice: Invoice = {
+                ...invoiceData,
+                id: (invoices.length + 1).toString(),
+                invoiceNumber: `INV-${(latestInvoiceNumber + 1).toString().padStart(3, '0')}`,
+                status: 'Pending', 
+                items: invoiceData.items.map((item, index) => ({ ...item, id: (index + 1).toString() })),
+            };
+            invoices.unshift(newInvoice);
+            resolve(newInvoice);
+        }, 500);
+    });
 }
