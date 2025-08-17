@@ -106,20 +106,48 @@ const initialInvoices: Invoice[] = [
   }
 ];
 
+const getCurrentUserEmail = (): string | null => {
+  if (typeof window === 'undefined') return null;
+  const user = localStorage.getItem('user');
+  return user ? JSON.parse(user).email : null;
+};
+
+// Initializes a default set of invoices for a new user
+export const initializeUserInvoices = (email: string) => {
+    if (typeof window === 'undefined') return;
+    const allInvoices = JSON.parse(localStorage.getItem('allInvoices') || '{}');
+    if (!allInvoices[email]) {
+        allInvoices[email] = initialInvoices;
+        localStorage.setItem('allInvoices', JSON.stringify(allInvoices));
+    }
+};
+
 const getStoredInvoices = (): Invoice[] => {
   if (typeof window === 'undefined') {
-    return initialInvoices;
+    return [];
   }
-  const stored = localStorage.getItem('invoices');
-  if (stored) {
-    return JSON.parse(stored);
+  const email = getCurrentUserEmail();
+  if (!email) return [];
+
+  const allInvoices = JSON.parse(localStorage.getItem('allInvoices') || '{}');
+  
+  if (!allInvoices[email]) {
+      initializeUserInvoices(email);
+      const updatedInvoices = JSON.parse(localStorage.getItem('allInvoices') || '{}');
+      return updatedInvoices[email] || [];
   }
-  localStorage.setItem('invoices', JSON.stringify(initialInvoices));
-  return initialInvoices;
+  
+  return allInvoices[email];
 };
 
 const setStoredInvoices = (invoices: Invoice[]) => {
-    localStorage.setItem('invoices', JSON.stringify(invoices));
+    if (typeof window === 'undefined') return;
+    const email = getCurrentUserEmail();
+    if (!email) return;
+
+    const allInvoices = JSON.parse(localStorage.getItem('allInvoices') || '{}');
+    allInvoices[email] = invoices;
+    localStorage.setItem('allInvoices', JSON.stringify(allInvoices));
 }
 
 // Simulate API calls

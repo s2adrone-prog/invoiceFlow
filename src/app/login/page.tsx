@@ -9,10 +9,11 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Logo } from '@/components/icons';
+import { getInvoices } from '@/lib/data'; // Used to check if user exists
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('m@example.com');
-  const [password, setPassword] = useState('password');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
@@ -21,10 +22,13 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate API call
+    // Simulate checking user credentials
     setTimeout(() => {
-        if (email && password) {
-            const user = { name: 'Demo User', email: email };
+        const storedUsers = JSON.parse(localStorage.getItem('users') || '{}');
+        const userExists = storedUsers[email];
+
+        if (userExists && userExists.password === password) {
+            const user = { name: userExists.name, email: email };
             localStorage.setItem('token', 'fake-jwt-token');
             localStorage.setItem('user', JSON.stringify(user));
             toast({
@@ -81,6 +85,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
+                placeholder="••••••••"
               />
             </div>
           </CardContent>

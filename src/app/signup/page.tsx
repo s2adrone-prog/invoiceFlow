@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Logo } from '@/components/icons';
+import { initializeUserInvoices } from '@/lib/data';
 
 export default function SignupPage() {
   const [email, setEmail] = useState('');
@@ -25,6 +26,23 @@ export default function SignupPage() {
     // Simulate API call
     setTimeout(() => {
         if(name && email && password) {
+            const storedUsers = JSON.parse(localStorage.getItem('users') || '{}');
+            if (storedUsers[email]) {
+                toast({
+                    title: 'Error',
+                    description: 'An account with this email already exists.',
+                    variant: 'destructive',
+                });
+                setIsLoading(false);
+                return;
+            }
+
+            storedUsers[email] = { name, password };
+            localStorage.setItem('users', JSON.stringify(storedUsers));
+            
+            // Initialize invoices for the new user
+            initializeUserInvoices(email);
+
             toast({
               title: 'Success',
               description: 'Account created successfully. You can now log in.',
@@ -36,8 +54,8 @@ export default function SignupPage() {
                 description: 'Please fill in all fields.',
                 variant: 'destructive',
             });
+            setIsLoading(false);
         }
-        setIsLoading(false);
     }, 1000);
   };
 
@@ -86,6 +104,7 @@ export default function SignupPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
+                placeholder="••••••••"
               />
             </div>
           </CardContent>
