@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -9,7 +10,6 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Logo } from '@/components/icons';
-import { getInvoices } from '@/lib/data'; // Used to check if user exists
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
