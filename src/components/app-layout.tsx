@@ -47,7 +47,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   // Don't render layout for auth pages
   const authPages = ['/login', '/signup', '/forgot-password'];
-  if (authPages.includes(pathname)) {
+  if (authPages.includes(pathname) || pathname.startsWith('/invoices/')) {
     return <>{children}</>;
   }
 
@@ -105,7 +105,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b bg-background/80 px-4 backdrop-blur-sm sm:px-6">
+        <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b bg-background/80 px-4 backdrop-blur-sm sm:px-6 print:hidden">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="md:hidden" />
             <h2 className="text-lg font-semibold">
