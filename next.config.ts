@@ -20,6 +20,7 @@ const nextConfig: NextConfig = {
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {
+      // Don't bundle 'express' on the client-side
       config.externals.push('express');
     }
     return config;
