@@ -96,30 +96,30 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
         </Button>
       </div>
       <Card ref={invoiceRef} className="print:shadow-none print:border-none print:p-0">
-        <CardHeader>
+        <CardHeader className="print:p-4">
           <div className="flex justify-between items-start">
             <div>
               <div className="flex items-center gap-2 mb-4">
                  <Logo className="w-auto h-8" />
               </div>
-              <p className="text-muted-foreground">123 Business Rd.<br/>Suite 100<br/>City, State 12345</p>
+              <p className="text-muted-foreground text-sm">123 Business Rd.<br/>Suite 100<br/>City, State 12345</p>
             </div>
             <div className="text-right">
-              <h2 className="text-3xl font-bold mb-2">Invoice</h2>
+              <h2 className="text-2xl font-bold mb-1">Invoice</h2>
               <p className="text-muted-foreground"># {invoice.invoiceNumber}</p>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
-          <Separator className="my-6" />
-          <div className="grid grid-cols-2 gap-4 mb-8">
+        <CardContent className="print:p-4 print:pt-0">
+          <Separator className="my-4 print:my-2" />
+          <div className="grid grid-cols-2 gap-4 mb-6 print:mb-3">
             <div>
-              <h3 className="font-semibold mb-2">Bill To:</h3>
-              <p>{invoice.customerName}</p>
-              <p className="text-muted-foreground">{invoice.customerEmail}</p>
-              <p className="text-muted-foreground">{invoice.customerPhone}</p>
+              <h3 className="font-semibold mb-1 text-sm">Bill To:</h3>
+              <p className="text-sm">{invoice.customerName}</p>
+              <p className="text-sm text-muted-foreground">{invoice.customerEmail}</p>
+              <p className="text-sm text-muted-foreground">{invoice.customerPhone}</p>
             </div>
-            <div className="text-right">
+            <div className="text-right text-sm">
               <p><span className="font-semibold">Invoice Date:</span> {new Date(invoice.invoiceDate).toLocaleDateString()}</p>
             </div>
           </div>
@@ -127,11 +127,11 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Description</TableHead>
-                <TableHead className="text-center">Quantity</TableHead>
-                <TableHead className="text-right">Unit Price</TableHead>
-                <TableHead className="text-right">Discount</TableHead>
-                <TableHead className="text-right">Total</TableHead>
+                <TableHead className="print:p-2">Description</TableHead>
+                <TableHead className="text-center print:p-2">Quantity</TableHead>
+                <TableHead className="text-right print:p-2">Unit Price</TableHead>
+                <TableHead className="text-right print:p-2">Discount</TableHead>
+                <TableHead className="text-right print:p-2">Total</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -141,23 +141,23 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
                 const totalAfterDiscount = itemTotal - discountAmount;
                 return (
                   <TableRow key={item.id}>
-                    <TableCell>{item.description}</TableCell>
-                    <TableCell className="text-center">{item.quantity}</TableCell>
-                    <TableCell className="text-right">${item.price.toFixed(2)}</TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="print:p-2">{item.description}</TableCell>
+                    <TableCell className="text-center print:p-2">{item.quantity}</TableCell>
+                    <TableCell className="text-right print:p-2">${item.price.toFixed(2)}</TableCell>
+                    <TableCell className="text-right print:p-2">
                       ${discountAmount.toFixed(2)} ({item.discountPercentage || 0}%)
                     </TableCell>
-                    <TableCell className="text-right">${totalAfterDiscount.toFixed(2)}</TableCell>
+                    <TableCell className="text-right print:p-2">${totalAfterDiscount.toFixed(2)}</TableCell>
                   </TableRow>
                 );
               })}
             </TableBody>
           </Table>
 
-          <Separator className="my-6" />
+          <Separator className="my-4 print:my-2" />
 
           <div className="flex justify-end">
-            <div className="w-full max-w-xs space-y-2">
+            <div className="w-full max-w-xs space-y-1 text-sm">
               <div className="flex justify-between">
                 <span>Subtotal</span>
                 <span>${subtotal.toFixed(2)}</span>
@@ -173,13 +173,13 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
                 </div>
               )}
               <Separator />
-              <div className="flex justify-between font-bold text-lg">
+              <div className="flex justify-between font-bold text-base">
                 <span>Total</span>
                 <span>${invoice.total.toFixed(2)}</span>
               </div>
             </div>
           </div>
-          <div className="mt-12 text-center text-muted-foreground text-sm">
+          <div className="mt-8 print:mt-4 text-center text-muted-foreground text-xs">
             <p>Thank you for your business!</p>
             <p>Please contact us with any questions.</p>
           </div>
