@@ -6,12 +6,14 @@ import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import { Button } from "@/components/ui/button";
 import type { Invoice } from "@/lib/types";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Printer } from "lucide-react";
 import { Logo } from "@/components/icons";
 import { WhatsAppDialog } from "./whatsapp-dialog";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -96,38 +98,52 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
         </Button>
       </div>
       <Card ref={invoiceRef} className="print:shadow-none print:border-none print:p-0">
-        <CardHeader className="print:p-4">
-          <div className="flex justify-between items-start">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                 <Logo className="w-auto h-8" />
+        <CardContent className="p-6 sm:p-8 print:p-4">
+          <div className="flex justify-between items-start mb-8 print:mb-4">
+            <div className="flex items-center gap-4">
+              <Logo className="w-auto h-10 text-primary" />
+              <div>
+                <h1 className="text-xl font-bold">ADR E-Store</h1>
+                <p className="text-muted-foreground text-sm">
+                    123 Business Rd. Suite 100<br/>
+                    City, State 12345
+                </p>
               </div>
-              <p className="text-muted-foreground text-sm">123 Business Rd.<br/>Suite 100<br/>City, State 12345</p>
             </div>
             <div className="text-right">
-              <h2 className="text-2xl font-bold mb-1">Invoice</h2>
-              <p className="text-muted-foreground"># {invoice.invoiceNumber}</p>
+                <h2 className="text-3xl font-bold mb-1">INVOICE</h2>
+                <Badge
+                  className={cn("text-sm", {
+                    "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400": invoice.status === "Paid",
+                    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400": invoice.status === "Pending",
+                    "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400": invoice.status === "Overdue",
+                  })}
+                  variant="outline"
+                >
+                  {invoice.status}
+                </Badge>
             </div>
           </div>
-        </CardHeader>
-        <CardContent className="print:p-4 print:pt-0">
-          <Separator className="my-4 print:my-2" />
-          <div className="grid grid-cols-2 gap-4 mb-6 print:mb-3">
+
+          <div className="grid grid-cols-2 gap-4 mb-8 print:mb-4">
             <div>
-              <h3 className="font-semibold mb-1 text-sm">Bill To:</h3>
-              <p className="text-sm">{invoice.customerName}</p>
-              <p className="text-sm text-muted-foreground">{invoice.customerEmail}</p>
-              <p className="text-sm text-muted-foreground">{invoice.customerPhone}</p>
+              <h3 className="font-semibold mb-2">Bill To:</h3>
+              <div className="text-sm text-muted-foreground">
+                <p className="font-medium text-foreground">{invoice.customerName}</p>
+                <p>{invoice.customerEmail}</p>
+                <p>{invoice.customerPhone}</p>
+              </div>
             </div>
-            <div className="text-right text-sm">
-              <p><span className="font-semibold">Invoice Date:</span> {new Date(invoice.invoiceDate).toLocaleDateString()}</p>
+            <div className="text-right text-sm space-y-1">
+              <p><span className="font-semibold text-foreground">Invoice Number:</span> {invoice.invoiceNumber}</p>
+              <p><span className="font-semibold text-foreground">Invoice Date:</span> {new Date(invoice.invoiceDate).toLocaleDateString()}</p>
             </div>
           </div>
 
           <Table>
-            <TableHeader>
+            <TableHeader className="bg-muted/50">
               <TableRow>
-                <TableHead className="print:p-2">Description</TableHead>
+                <TableHead className="w-[50%] print:p-2">Description</TableHead>
                 <TableHead className="text-center print:p-2">Quantity</TableHead>
                 <TableHead className="text-right print:p-2">Unit Price</TableHead>
                 <TableHead className="text-right print:p-2">Discount</TableHead>
@@ -141,47 +157,45 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
                 const totalAfterDiscount = itemTotal - discountAmount;
                 return (
                   <TableRow key={item.id}>
-                    <TableCell className="print:p-2">{item.description}</TableCell>
+                    <TableCell className="font-medium print:p-2">{item.description}</TableCell>
                     <TableCell className="text-center print:p-2">{item.quantity}</TableCell>
                     <TableCell className="text-right print:p-2">${item.price.toFixed(2)}</TableCell>
                     <TableCell className="text-right print:p-2">
                       ${discountAmount.toFixed(2)} ({item.discountPercentage || 0}%)
                     </TableCell>
-                    <TableCell className="text-right print:p-2">${totalAfterDiscount.toFixed(2)}</TableCell>
+                    <TableCell className="text-right font-medium print:p-2">${totalAfterDiscount.toFixed(2)}</TableCell>
                   </TableRow>
                 );
               })}
             </TableBody>
           </Table>
 
-          <Separator className="my-4 print:my-2" />
-
-          <div className="flex justify-end">
-            <div className="w-full max-w-xs space-y-1 text-sm">
+          <div className="flex justify-end mt-6 print:mt-3">
+            <div className="w-full max-w-sm space-y-2 text-sm">
               <div className="flex justify-between">
-                <span>Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span className="text-muted-foreground">Subtotal</span>
+                <span className="font-medium">${subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span>Discount</span>
-                <span className="text-green-600">-${totalDiscount.toFixed(2)}</span>
+                <span className="text-muted-foreground">Discount</span>
+                <span className="font-medium text-green-600">-${totalDiscount.toFixed(2)}</span>
               </div>
                {invoice.gstRate > 0 && (
                 <div className="flex justify-between">
-                  <span>GST ({invoice.gstRate}%)</span>
-                  <span>${gstAmount.toFixed(2)}</span>
+                  <span className="text-muted-foreground">GST ({invoice.gstRate}%)</span>
+                  <span className="font-medium">${gstAmount.toFixed(2)}</span>
                 </div>
               )}
-              <Separator />
-              <div className="flex justify-between font-bold text-base">
+              <Separator className="my-2" />
+              <div className="flex justify-between font-bold text-lg">
                 <span>Total</span>
                 <span>${invoice.total.toFixed(2)}</span>
               </div>
             </div>
           </div>
-          <div className="mt-8 print:mt-4 text-center text-muted-foreground text-xs">
+          <div className="mt-12 print:mt-4 text-center text-muted-foreground text-xs">
             <p>Thank you for your business!</p>
-            <p>Please contact us with any questions.</p>
+            <p>Please contact us at (123) 456-7890 with any questions.</p>
           </div>
         </CardContent>
       </Card>
