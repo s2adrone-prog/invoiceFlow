@@ -95,7 +95,7 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
           Print / Download
         </Button>
       </div>
-      <Card ref={invoiceRef} className="print:shadow-none print:border-none print:p-4">
+      <Card ref={invoiceRef} className="print:shadow-none print:border-none print:p-0">
         <CardHeader>
           <div className="flex justify-between items-start">
             <div>
