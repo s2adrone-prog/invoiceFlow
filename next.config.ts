@@ -18,6 +18,12 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.externals.push('express');
+    }
+    return config;
+  },
 };
 
 export default nextConfig;
