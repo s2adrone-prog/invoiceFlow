@@ -22,7 +22,6 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    // This logic now correctly checks localStorage.
     // The timeout simulates a network request.
     setTimeout(() => {
       // Ensure this code only runs on the client-side.
