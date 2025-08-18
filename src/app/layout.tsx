@@ -3,7 +3,6 @@ import { AppLayout } from '@/components/app-layout';
 import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 import { AuthProvider } from '@/components/auth-provider';
-import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: 'ADR E-Store',
@@ -30,14 +29,6 @@ export default function RootLayout({
             <AppLayout>{children}</AppLayout>
             <Toaster />
         </AuthProvider>
-        <Script id="clear-local-storage" strategy="beforeInteractive">
-          {`
-            if (typeof window !== 'undefined') {
-              window.localStorage.removeItem('users');
-              window.localStorage.removeItem('allInvoices');
-            }
-          `}
-        </Script>
       </body>
     </html>
   );
