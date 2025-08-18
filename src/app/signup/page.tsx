@@ -1,61 +1,71 @@
+
 "use client";
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Logo } from '@/components/icons';
 import { initializeUserInvoices } from '@/lib/data';
+import { Loader2 } from 'lucide-react';
+
+const formSchema = z.object({
+  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
+  email: z.string().email({ message: "Please enter a valid email address." }),
+  password: z.string().min(8, { message: "Password must be at least 8 characters." }),
+});
+
 
 export default function SignupPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+    },
+  });
+
+  const handleSubmit = (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
 
     // Simulate API call
     setTimeout(() => {
-        if(name && email && password) {
-            const storedUsers = JSON.parse(localStorage.getItem('users') || '{}');
-            if (storedUsers[email]) {
-                toast({
-                    title: 'Error',
-                    description: 'An account with this email already exists.',
-                    variant: 'destructive',
-                });
-                setIsLoading(false);
-                return;
-            }
-
-            storedUsers[email] = { name, password };
-            localStorage.setItem('users', JSON.stringify(storedUsers));
-            
-            // Initialize invoices for the new user
-            initializeUserInvoices(email);
-
-            toast({
-              title: 'Success',
-              description: 'Account created successfully. You can now log in.',
-            });
-            router.push('/login');
-        } else {
+        const storedUsers = JSON.parse(localStorage.getItem('users') || '{}');
+        if (storedUsers[values.email]) {
             toast({
                 title: 'Error',
-                description: 'Please fill in all fields.',
+                description: 'An account with this email already exists.',
                 variant: 'destructive',
             });
             setIsLoading(false);
+            return;
         }
+
+        storedUsers[values.email] = { name: values.name, password: values.password };
+        localStorage.setItem('users', JSON.stringify(storedUsers));
+        
+        // Initialize invoices for the new user
+        initializeUserInvoices(values.email);
+
+        toast({
+          title: 'Success',
+          description: 'Account created successfully. You can now log in.',
+        });
+        router.push('/login');
     }, 1000);
   };
 
@@ -69,54 +79,72 @@ export default function SignupPage() {
           <CardTitle>Create an Account</CardTitle>
           <CardDescription>Enter your details to get started.</CardDescription>
         </CardHeader>
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-          <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="John Doe"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                disabled={isLoading}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <CardContent className="space-y-4">
+            <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="John Doe"
+                        {...field}
+                        disabled={isLoading}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isLoading}
+            <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="m@example.com"
+                        {...field}
+                        disabled={isLoading}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input 
-                id="password" 
-                type="password" 
-                required 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
-                placeholder="••••••••"
+            <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="password" 
+                        {...field}
+                        disabled={isLoading}
+                        placeholder="••••••••"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-          </CardContent>
-          <CardFooter className="flex-col gap-4">
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Creating Account...' : 'Create Account'}
-            </Button>
-            <p className="text-sm text-muted-foreground">
-                Already have an account? <Link href="/login" className="font-semibold text-primary hover:underline">Sign In</Link>
-            </p>
-          </CardFooter>
-        </form>
+            </CardContent>
+            <CardFooter className="flex-col gap-4">
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? <Loader2 className="animate-spin" /> : 'Create Account'}
+              </Button>
+              <p className="text-sm text-muted-foreground">
+                  Already have an account? <Link href="/login" className="font-semibold text-primary hover:underline">Sign In</Link>
+              </p>
+            </CardFooter>
+          </form>
+        </Form>
       </Card>
     </div>
   );
