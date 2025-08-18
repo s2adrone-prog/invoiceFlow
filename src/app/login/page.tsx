@@ -25,10 +25,10 @@ export default function LoginPage() {
     // Simulate checking user credentials
     setTimeout(() => {
         const storedUsers = JSON.parse(localStorage.getItem('users') || '{}');
-        const userExists = storedUsers[email];
+        const userAccount = storedUsers[email];
 
-        if (userExists && userExists.password === password) {
-            const user = { name: userExists.name, email: email };
+        if (userAccount && userAccount.password === password) {
+            const user = { name: userAccount.name, email: email };
             localStorage.setItem('token', 'fake-jwt-token');
             localStorage.setItem('user', JSON.stringify(user));
             toast({
