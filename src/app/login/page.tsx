@@ -22,28 +22,41 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate checking user credentials
+    // This logic now correctly checks localStorage.
+    // The timeout simulates a network request.
     setTimeout(() => {
-        const storedUsers = JSON.parse(localStorage.getItem('users') || '{}');
-        const userAccount = storedUsers[email];
+      // Ensure this code only runs on the client-side.
+      if (typeof window === 'undefined') {
+        setIsLoading(false);
+        return;
+      }
+      
+      const storedUsers = JSON.parse(localStorage.getItem('users') || '{}');
+      const userAccount = storedUsers[email];
 
-        if (userAccount && userAccount.password === password) {
-            const user = { name: userAccount.name, email: email };
-            localStorage.setItem('token', 'fake-jwt-token');
-            localStorage.setItem('user', JSON.stringify(user));
-            toast({
-                title: 'Success',
-                description: 'Logged in successfully.',
-            });
-            window.location.href = '/';
-        } else {
-            toast({
-                title: 'Error',
-                description: 'Invalid email or password.',
-                variant: 'destructive',
-            });
-             setIsLoading(false);
-        }
+      if (userAccount && userAccount.password === password) {
+        // Success: User exists and password matches
+        const user = { name: userAccount.name, email: email };
+        localStorage.setItem('token', 'fake-jwt-token');
+        localStorage.setItem('user', JSON.stringify(user));
+        
+        toast({
+          title: 'Success',
+          description: 'Logged in successfully.',
+        });
+        
+        // Redirect to dashboard. Using window.location.href ensures a full page reload 
+        // which can help in re-initializing the app state and auth context correctly.
+        window.location.href = '/';
+      } else {
+        // Failure: User doesn't exist or password incorrect
+        toast({
+          title: 'Error',
+          description: 'Invalid email or password.',
+          variant: 'destructive',
+        });
+        setIsLoading(false);
+      }
     }, 1000);
   };
 
