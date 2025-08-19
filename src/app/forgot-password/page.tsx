@@ -1,6 +1,8 @@
+
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -15,19 +17,31 @@ export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isSubmitted) {
+      toast({
+        title: 'Password Reset',
+        description: 'If an account exists for that email, a reset link has been sent.',
+      });
+      // Redirect to login page after 3 seconds
+      timer = setTimeout(() => {
+        router.push('/login');
+      }, 3000);
+    }
+    return () => clearTimeout(timer);
+  }, [isSubmitted, toast, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate API call
+    // Simulate API call to send reset email
     setTimeout(() => {
         if (email) {
             setIsSubmitted(true);
-            toast({
-                title: 'Password Reset',
-                description: 'In a real app, an email would be sent if the account exists.',
-            });
         } else {
              toast({
                 title: 'Error',
@@ -49,7 +63,7 @@ export default function ForgotPasswordPage() {
           <CardTitle>Forgot Your Password?</CardTitle>
           <CardDescription>
             {isSubmitted 
-              ? "If an account with this email exists, a password reset link would have been sent."
+              ? "Check your email for a password reset link. Redirecting to login..."
               : "No problem. Enter your email below and we'll send you a link to reset it."
             }
             </CardDescription>
