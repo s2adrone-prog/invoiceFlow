@@ -2,6 +2,8 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -38,19 +40,18 @@ export default function ForgotPasswordPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate API call to send reset email
-    setTimeout(() => {
-        if (email) {
-            setIsSubmitted(true);
-        } else {
-             toast({
-                title: 'Error',
-                description: 'Please enter an email address.',
-                variant: 'destructive',
-            });
-        }
-        setIsLoading(false);
-    }, 1000);
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setIsSubmitted(true);
+    } catch (error: any) {
+      toast({
+        title: 'Error sending reset email',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
