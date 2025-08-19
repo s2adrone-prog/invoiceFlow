@@ -5,12 +5,13 @@ import { getAuth } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "YOUR_ACTUAL_API_KEY",
-  authDomain: "YOUR_ACTUAL_AUTH_DOMAIN",
-  projectId: "YOUR_ACTUAL_PROJECT_ID",
-  storageBucket: "YOUR_ACTUAL_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_ACTUAL_MESSAGING_SENDER_ID",
-  appId: "YOUR_ACTUAL_APP_ID"
+  "projectId": "invoiceflow-ru3dl",
+  "appId": "1:358337464280:web:a0380fe0a04c6bfbb754ad",
+  "storageBucket": "invoiceflow-ru3dl.firebasestorage.app",
+  "apiKey": "AIzaSyCEb16ixeOneCQg4NHGhqwuQo3XjTg1LLA",
+  "authDomain": "invoiceflow-ru3dl.firebaseapp.com",
+  "measurementId": "",
+  "messagingSenderId": "358337464280"
 };
 
 // Initialize Firebase
