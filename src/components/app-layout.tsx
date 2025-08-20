@@ -46,13 +46,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     return currentItem?.label || 'Dashboard';
   }
 
-  // Don't render layout for auth pages or printable invoice view
-  const authPages = ['/login', '/signup', '/forgot-password'];
+  const authPages = ['/login'];
   if (authPages.includes(pathname)) {
     return <>{children}</>;
   }
   
-  // A specific check for the printable invoice view, which has a different layout
   if (pathname.startsWith('/invoices/') && pathname.includes('/print')) {
       return <>{children}</>;
   }

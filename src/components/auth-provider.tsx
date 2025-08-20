@@ -3,10 +3,10 @@
 
 import { useEffect, useState, createContext, useContext, ReactNode } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
+import { onAuthStateChanged, isSignInWithEmailLink, signInWithEmailLink, User as FirebaseUser } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { Loader2 } from 'lucide-react';
-
+import { useToast } from '@/hooks/use-toast';
 
 interface User {
   displayName: string | null;
@@ -27,14 +27,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
+  const { toast } = useToast();
 
-  const publicPaths = ['/login', '/signup', '/forgot-password'];
+  const publicPaths = ['/login'];
 
   useEffect(() => {
+    // Handle the email link sign-in
+    if (isSignInWithEmailLink(auth, window.location.href)) {
+      let email = window.localStorage.getItem('emailForSignIn');
+      if (!email) {
+        email = window.prompt('Please provide your email for confirmation');
+      }
+      if(email) {
+        signInWithEmailLink(auth, email, window.location.href)
+          .then((result) => {
+            window.localStorage.removeItem('emailForSignIn');
+            setUser({
+              displayName: result.user.displayName,
+              email: result.user.email,
+              uid: result.user.uid
+            });
+            router.replace('/');
+          })
+          .catch((error) => {
+            toast({
+              title: "Sign In Error",
+              description: "The sign-in link is invalid or has expired.",
+              variant: "destructive"
+            });
+            router.replace('/login');
+          });
+      }
+    }
+
+
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
       if (firebaseUser) {
         setUser({
-            displayName: firebaseUser.displayName,
+            displayName: firebaseUser.displayName || firebaseUser.email,
             email: firebaseUser.email,
             uid: firebaseUser.uid
         });
@@ -51,15 +81,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     return () => unsubscribe();
-  }, [pathname, router]);
+  }, [pathname, router, toast]);
 
   const logout = () => {
     auth.signOut().then(() => {
       router.push('/login');
     });
   };
-
-  const pathIsPublic = publicPaths.includes(pathname);
 
   if (loading) {
     return (
