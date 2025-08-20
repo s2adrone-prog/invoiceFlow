@@ -16,6 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Logo } from '@/components/icons';
 import { Loader2 } from 'lucide-react';
 import type { User } from '@/lib/types';
+import { useAuth } from '@/components/auth-provider';
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -26,6 +27,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
+  const { login } = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -37,34 +39,36 @@ export default function LoginPage() {
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
+    // This timeout simulates a network request
     setTimeout(() => {
-      try {
-        const users = JSON.parse(localStorage.getItem('users') || '[]') as User[];
-        const user = users.find(u => u.email === values.email && u.password === values.password);
+      if (typeof window !== 'undefined') {
+        try {
+          const users = JSON.parse(localStorage.getItem('users') || '[]') as User[];
+          const user = users.find(u => u.email === values.email && u.password === values.password);
 
-        if (user) {
-          localStorage.setItem('loggedInUser', JSON.stringify(user));
-          toast({
-            title: 'Success',
-            description: 'Logged in successfully.',
-          });
-          router.push('/');
-          router.refresh(); // Force a refresh to update layout
-        } else {
+          if (user) {
+            const { password, ...userToLogin } = user;
+            login(userToLogin);
+            toast({
+              title: 'Success',
+              description: 'Logged in successfully.',
+            });
+          } else {
+            toast({
+              title: 'Error',
+              description: 'Invalid email or password.',
+              variant: 'destructive',
+            });
+            setIsLoading(false);
+          }
+        } catch (error) {
           toast({
             title: 'Error',
-            description: 'Invalid email or password.',
+            description: 'An unexpected error occurred.',
             variant: 'destructive',
           });
+          setIsLoading(false);
         }
-      } catch (error) {
-        toast({
-          title: 'Error',
-          description: 'An unexpected error occurred.',
-          variant: 'destructive',
-        });
-      } finally {
-        setIsLoading(false);
       }
     }, 1000);
   };

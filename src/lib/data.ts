@@ -106,12 +106,6 @@ const initialInvoices: Invoice[] = [
   }
 ];
 
-const getUsers = (): User[] => {
-    if (typeof window === 'undefined') return [];
-    const users = localStorage.getItem('users');
-    return users ? JSON.parse(users) : [];
-}
-
 const getStoredInvoices = (): Invoice[] => {
   if (typeof window === 'undefined') {
     return [];

@@ -3,7 +3,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -27,7 +26,6 @@ const formSchema = z.object({
 export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const router = useRouter();
   const { login } = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -42,45 +40,45 @@ export default function SignupPage() {
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     setTimeout(() => {
-      try {
-        const users = JSON.parse(localStorage.getItem('users') || '[]') as User[];
-        const userExists = users.some(u => u.email === values.email);
+      if (typeof window !== 'undefined') {
+        try {
+          const users = JSON.parse(localStorage.getItem('users') || '[]') as User[];
+          const userExists = users.some(u => u.email === values.email);
 
-        if (userExists) {
+          if (userExists) {
+            toast({
+              title: 'Error',
+              description: 'An account with this email already exists.',
+              variant: 'destructive',
+            });
+            setIsLoading(false);
+            return;
+          }
+          
+          const newUser: User = {
+              id: Date.now().toString(),
+              ...values,
+          };
+
+          const updatedUsers = [...users, newUser];
+          localStorage.setItem('users', JSON.stringify(updatedUsers));
+          
+          const { password, ...userToLogin } = newUser;
+          login(userToLogin);
+
+          toast({
+            title: 'Success',
+            description: 'Account created successfully.',
+          });
+
+        } catch (error) {
           toast({
             title: 'Error',
-            description: 'An account with this email already exists.',
+            description: 'An unexpected error occurred.',
             variant: 'destructive',
           });
           setIsLoading(false);
-          return;
         }
-        
-        const newUser: User = {
-            id: Date.now().toString(),
-            ...values,
-        };
-
-        const updatedUsers = [...users, newUser];
-        localStorage.setItem('users', JSON.stringify(updatedUsers));
-        
-        // Automatically log in the new user
-        const { password, ...userToLogin } = newUser;
-        login(userToLogin);
-
-        toast({
-          title: 'Success',
-          description: 'Account created successfully.',
-        });
-
-      } catch (error) {
-        toast({
-          title: 'Error',
-          description: 'An unexpected error occurred.',
-          variant: 'destructive',
-        });
-      } finally {
-        setIsLoading(false);
       }
     }, 1000);
   };
