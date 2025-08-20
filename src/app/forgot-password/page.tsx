@@ -3,7 +3,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -24,7 +23,6 @@ export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
-  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -33,18 +31,37 @@ export default function ForgotPasswordPage() {
     },
   });
 
-  const handleSubmit = (values: z.infer<typeof formSchema>) => {
+  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
-    // This is a mock implementation. In a real app, you'd call your backend/Firebase here.
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const response = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: values.email }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Something went wrong');
+      }
+
       setIsSubmitted(true);
       toast({
         title: 'Check your email',
         description: `If an account exists for ${values.email}, a password reset link has been sent.`,
       });
-      setTimeout(() => router.push('/login'), 3000);
-    }, 1000);
+
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to send password reset email. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -57,7 +74,7 @@ export default function ForgotPasswordPage() {
           <CardTitle>Forgot Password</CardTitle>
           <CardDescription>
             {isSubmitted 
-              ? "You can close this tab now."
+              ? "Password reset link sent. You can close this tab."
               : "Enter your email to receive a password reset link."
             }
           </CardDescription>
@@ -84,7 +101,7 @@ export default function ForgotPasswordPage() {
                         )}
                     />
                 ) : (
-                    <p className="text-center text-sm text-green-600">Password reset link sent! You will be redirected shortly.</p>
+                    <p className="text-center text-sm text-green-600">Please check your email for the reset link.</p>
                 )}
                 </CardContent>
                 <CardFooter className="flex-col gap-4">
