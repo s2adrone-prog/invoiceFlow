@@ -40,17 +40,29 @@ export default function SignupPage() {
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     setTimeout(() => {
-        const users = JSON.parse(localStorage.getItem('users') || '[]') as User[];
+        let users: User[] = [];
+        try {
+            const storedUsers = localStorage.getItem('users');
+            if (storedUsers) {
+                const parsedUsers = JSON.parse(storedUsers);
+                if (Array.isArray(parsedUsers)) {
+                    users = parsedUsers;
+                }
+            }
+        } catch (e) {
+            console.error("Failed to parse users from localStorage", e);
+        }
+
         const userExists = users.some(u => u.email === values.email);
 
         if (userExists) {
-        toast({
-            title: 'Error',
-            description: 'An account with this email already exists.',
-            variant: 'destructive',
-        });
-        setIsLoading(false);
-        return;
+            toast({
+                title: 'Error',
+                description: 'An account with this email already exists.',
+                variant: 'destructive',
+            });
+            setIsLoading(false);
+            return;
         }
         
         const newUser: User = {
@@ -65,8 +77,8 @@ export default function SignupPage() {
         login(userToLogin);
 
         toast({
-        title: 'Success',
-        description: 'Account created successfully.',
+            title: 'Success',
+            description: 'Account created successfully.',
         });
     }, 1000);
   };

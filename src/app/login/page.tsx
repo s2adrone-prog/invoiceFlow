@@ -41,24 +41,36 @@ export default function LoginPage() {
     setIsLoading(true);
     // This timeout simulates a network request
     setTimeout(() => {
-        const users = JSON.parse(localStorage.getItem('users') || '[]') as User[];
+        let users: User[] = [];
+        try {
+            const storedUsers = localStorage.getItem('users');
+            if (storedUsers) {
+                const parsedUsers = JSON.parse(storedUsers);
+                if (Array.isArray(parsedUsers)) {
+                    users = parsedUsers;
+                }
+            }
+        } catch (e) {
+            console.error("Failed to parse users from localStorage", e);
+        }
+
         const user = users.find(u => u.email === values.email && u.password === values.password);
 
         if (user) {
-        const { password, ...userToLogin } = user;
-        login(userToLogin);
-        toast({
-            title: 'Success',
-            description: 'Logged in successfully.',
-        });
+            const { password, ...userToLogin } = user;
+            login(userToLogin);
+            toast({
+                title: 'Success',
+                description: 'Logged in successfully.',
+            });
         } else {
-        toast({
-            title: 'Error',
-            description: 'Invalid email or password.',
-            variant: 'destructive',
-        });
-        setIsLoading(false);
+            toast({
+                title: 'Error',
+                description: 'Invalid email or password.',
+                variant: 'destructive',
+            });
         }
+        setIsLoading(false);
     }, 1000);
   };
 
