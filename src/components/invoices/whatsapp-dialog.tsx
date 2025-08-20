@@ -49,7 +49,7 @@ export function WhatsAppDialog({ invoice, children, onSend }: WhatsAppDialogProp
     // Then prepare and open the WhatsApp link
     const message = `Hello ${invoice.customerName},
 
-Here is your invoice ${invoice.invoiceNumber} for $${invoice.total.toFixed(2)}.
+Here is your invoice ${invoice.invoiceNumber} for ₹${invoice.total.toFixed(2)}.
 
 Please find the attached PDF for details.
 

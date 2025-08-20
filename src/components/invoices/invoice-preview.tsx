@@ -159,11 +159,11 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
                   <TableRow key={item.id}>
                     <TableCell className="font-medium print:p-2">{item.description}</TableCell>
                     <TableCell className="text-center print:p-2">{item.quantity}</TableCell>
-                    <TableCell className="text-right print:p-2">${item.price.toFixed(2)}</TableCell>
+                    <TableCell className="text-right print:p-2">₹{item.price.toFixed(2)}</TableCell>
                     <TableCell className="text-right print:p-2">
-                      ${discountAmount.toFixed(2)} ({item.discountPercentage || 0}%)
+                      ₹{discountAmount.toFixed(2)} ({item.discountPercentage || 0}%)
                     </TableCell>
-                    <TableCell className="text-right font-medium print:p-2">${totalAfterDiscount.toFixed(2)}</TableCell>
+                    <TableCell className="text-right font-medium print:p-2">₹{totalAfterDiscount.toFixed(2)}</TableCell>
                   </TableRow>
                 );
               })}
@@ -174,22 +174,22 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
             <div className="w-full max-w-sm space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Subtotal</span>
-                <span className="font-medium">${subtotal.toFixed(2)}</span>
+                <span className="font-medium">₹{subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Discount</span>
-                <span className="font-medium text-green-600">-${totalDiscount.toFixed(2)}</span>
+                <span className="font-medium text-green-600">-₹{totalDiscount.toFixed(2)}</span>
               </div>
                {invoice.gstRate > 0 && (
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">GST ({invoice.gstRate}%)</span>
-                  <span className="font-medium">${gstAmount.toFixed(2)}</span>
+                  <span className="font-medium">₹{gstAmount.toFixed(2)}</span>
                 </div>
               )}
               <Separator className="my-2" />
               <div className="flex justify-between font-bold text-lg">
                 <span>Total</span>
-                <span>${invoice.total.toFixed(2)}</span>
+                <span>₹{invoice.total.toFixed(2)}</span>
               </div>
             </div>
           </div>

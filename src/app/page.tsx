@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { CreditCard, DollarSign, Package, Loader2 } from 'lucide-react';
+import { CreditCard, IndianRupee, Package, Loader2 } from 'lucide-react';
 
 import { getInvoices } from '@/lib/data';
 import type { Invoice } from '@/lib/types';
@@ -62,12 +62,12 @@ export default function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <StatCard
           title="Total Sales"
-          value={`$${totalSales.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2})}`}
-          icon={DollarSign}
+          value={`₹${totalSales.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2})}`}
+          icon={IndianRupee}
         />
         <StatCard
           title="Outstanding Payments"
-          value={`$${outstandingPayments.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2})}`}
+          value={`₹${outstandingPayments.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2})}`}
           icon={CreditCard}
         />
         <StatCard

@@ -37,12 +37,12 @@ export function SalesChart({ data }: SalesChartProps) {
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
-                  tickFormatter={(value) => `$${value / 1000}k`}
+                  tickFormatter={(value) => `₹${Number(value) / 1000}k`}
                 />
                 <ChartTooltip
                     cursor={{ fill: 'hsl(var(--accent) / 0.3)' }}
                     content={<ChartTooltipContent 
-                        formatter={(value) => `$${Number(value).toLocaleString()}`}
+                        formatter={(value) => `₹${Number(value).toLocaleString('en-IN')}`}
                         labelClassName="font-semibold"
                         className="rounded-lg border bg-background p-2 shadow-sm"
                     />}

@@ -26,7 +26,7 @@ export function RecentInvoices({ invoices }: RecentInvoicesProps) {
               <p className="text-sm font-medium leading-none">{invoice.customerName}</p>
               <p className="text-sm text-muted-foreground">{invoice.customerEmail}</p>
             </div>
-            <div className="ml-auto font-medium">+${invoice.total.toLocaleString()}</div>
+            <div className="ml-auto font-medium">+₹{invoice.total.toLocaleString('en-IN')}</div>
           </div>
         ))}
       </CardContent>
