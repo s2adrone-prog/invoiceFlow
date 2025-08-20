@@ -1,3 +1,4 @@
+
 "use client";
 
 import { LayoutDashboard, FileText, Lightbulb, User, LogOut } from "lucide-react";
@@ -95,7 +96,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                                 </AvatarFallback>
                             </Avatar>
                             <div className="flex flex-col items-start text-left">
-                                <span className="text-sm font-medium">{user?.name}</span>
+                                <span className="text-sm font-medium">{user?.displayName}</span>
                                 <span className="text-xs text-muted-foreground">{user?.email}</span>
                             </div>
                         </div>

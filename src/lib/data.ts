@@ -2,6 +2,7 @@
 "use client"
 
 import type { Invoice } from './types';
+import { auth } from '@/lib/firebase';
 
 const initialInvoices: Invoice[] = [
   {
@@ -106,48 +107,25 @@ const initialInvoices: Invoice[] = [
   }
 ];
 
-const getCurrentUserEmail = (): string | null => {
+const getCurrentUserKey = (): string | null => {
   if (typeof window === 'undefined') return null;
-  const user = localStorage.getItem('user');
-  return user ? JSON.parse(user).email : null;
-};
-
-// Initializes a default set of invoices for a new user
-export const initializeUserInvoices = (email: string) => {
-    if (typeof window === 'undefined') return;
-    const allInvoices = JSON.parse(localStorage.getItem('allInvoices') || '{}');
-    if (!allInvoices[email]) {
-        allInvoices[email] = initialInvoices;
-        localStorage.setItem('allInvoices', JSON.stringify(allInvoices));
-    }
+  const user = auth.currentUser;
+  return user ? `invoices_${user.uid}` : 'invoices_anonymous';
 };
 
 const getStoredInvoices = (): Invoice[] => {
   if (typeof window === 'undefined') {
-    return [];
+    return initialInvoices; // Return initial data for SSR or if not logged in
   }
-  const email = getCurrentUserEmail();
-  if (!email) return [];
-
-  const allInvoices = JSON.parse(localStorage.getItem('allInvoices') || '{}');
-  
-  if (!allInvoices[email]) {
-      initializeUserInvoices(email);
-      const updatedInvoices = JSON.parse(localStorage.getItem('allInvoices') || '{}');
-      return updatedInvoices[email] || [];
-  }
-  
-  return allInvoices[email];
+  const userKey = getCurrentUserKey();
+  const data = localStorage.getItem(userKey);
+  return data ? JSON.parse(data) : initialInvoices;
 };
 
 const setStoredInvoices = (invoices: Invoice[]) => {
     if (typeof window === 'undefined') return;
-    const email = getCurrentUserEmail();
-    if (!email) return;
-
-    const allInvoices = JSON.parse(localStorage.getItem('allInvoices') || '{}');
-    allInvoices[email] = invoices;
-    localStorage.setItem('allInvoices', JSON.stringify(allInvoices));
+    const userKey = getCurrentUserKey();
+    localStorage.setItem(userKey, JSON.stringify(invoices));
 }
 
 // Simulate API calls

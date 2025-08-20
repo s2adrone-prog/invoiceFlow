@@ -6,16 +6,16 @@ import { useRouter } from 'next/navigation';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Logo } from '@/components/icons';
-import { initializeUserInvoices } from '@/lib/data';
 import { Loader2 } from 'lucide-react';
 
 const formSchema = z.object({
@@ -39,34 +39,32 @@ export default function SignupPage() {
     },
   });
 
-  const handleSubmit = (values: z.infer<typeof formSchema>) => {
+  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
-
-    // Simulate API call
-    setTimeout(() => {
-        const storedUsers = JSON.parse(localStorage.getItem('users') || '{}');
-        if (storedUsers[values.email]) {
-            toast({
-                title: 'Error',
-                description: 'An account with this email already exists.',
-                variant: 'destructive',
-            });
-            setIsLoading(false);
-            return;
-        }
-
-        storedUsers[values.email] = { name: values.name, password: values.password };
-        localStorage.setItem('users', JSON.stringify(storedUsers));
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
         
-        // Initialize invoices for the new user
-        initializeUserInvoices(values.email);
-
+        if (userCredential.user) {
+            await updateProfile(userCredential.user, {
+                displayName: values.name
+            });
+        }
+        
         toast({
           title: 'Success',
           description: 'Account created successfully. You can now log in.',
         });
         router.push('/login');
-    }, 1000);
+
+    } catch (error: any) {
+        toast({
+            title: 'Error',
+            description: error.message,
+            variant: 'destructive',
+        });
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   return (

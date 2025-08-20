@@ -6,11 +6,12 @@ import { useRouter } from 'next/navigation';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
@@ -35,44 +36,25 @@ export default function LoginPage() {
     },
   });
 
-  const handleSubmit = (values: z.infer<typeof formSchema>) => {
+  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
 
-    // The timeout simulates a network request.
-    setTimeout(() => {
-      // Ensure this code only runs on the client-side.
-      if (typeof window === 'undefined') {
-        setIsLoading(false);
-        return;
-      }
-      
-      const storedUsers = JSON.parse(localStorage.getItem('users') || '{}');
-      const userAccount = storedUsers[values.email];
-
-      if (userAccount && userAccount.password === values.password) {
-        // Success: User exists and password matches
-        const user = { name: userAccount.name, email: values.email };
-        localStorage.setItem('token', 'fake-jwt-token');
-        localStorage.setItem('user', JSON.stringify(user));
-        
+    try {
+        await signInWithEmailAndPassword(auth, values.email, values.password);
         toast({
-          title: 'Success',
-          description: 'Logged in successfully.',
+            title: 'Success',
+            description: 'Logged in successfully.',
         });
-        
-        // Redirect to dashboard. Using window.location.href ensures a full page reload 
-        // which can help in re-initializing the app state and auth context correctly.
-        window.location.href = '/';
-      } else {
-        // Failure: User doesn't exist or password incorrect
+        router.push('/');
+    } catch (error: any) {
         toast({
-          title: 'Error',
-          description: 'Invalid email or password.',
-          variant: 'destructive',
+            title: 'Error',
+            description: 'Invalid email or password.',
+            variant: 'destructive',
         });
+    } finally {
         setIsLoading(false);
-      }
-    }, 1000);
+    }
   };
 
   return (

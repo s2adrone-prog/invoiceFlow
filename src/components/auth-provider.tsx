@@ -1,11 +1,17 @@
+
 "use client";
 
 import { useEffect, useState, createContext, useContext, ReactNode } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+import { Loader2 } from 'lucide-react';
+
 
 interface User {
-  name: string;
-  email: string;
+  displayName: string | null;
+  email: string | null;
+  uid: string;
 }
 
 interface AuthContextType {
@@ -25,53 +31,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const publicPaths = ['/login', '/signup', '/forgot-password'];
 
   useEffect(() => {
-    // This effect should only run on the client
-    if (typeof window === 'undefined') {
-      return;
-    }
-  
-    const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
-    const pathIsPublic = publicPaths.includes(pathname);
-  
-    if (token && userData) {
-      try {
-        const parsedUser = JSON.parse(userData);
-        setUser(parsedUser);
-        if (pathIsPublic) {
-          router.replace('/');
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
+      if (firebaseUser) {
+        setUser({
+            displayName: firebaseUser.displayName,
+            email: firebaseUser.email,
+            uid: firebaseUser.uid
+        });
+        if (publicPaths.includes(pathname)) {
+            router.replace('/');
         }
-      } catch (e) {
-        console.error("Failed to parse user data from localStorage", e);
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        if (!pathIsPublic) {
+      } else {
+        setUser(null);
+        if (!publicPaths.includes(pathname)) {
           router.replace('/login');
         }
       }
-    } else if (!pathIsPublic) {
-      router.replace('/login');
-    }
-  
-    setLoading(false);
-  
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, [pathname, router]);
 
   const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setUser(null);
-    // Use window.location to force a full refresh, ensuring AuthProvider re-evaluates
-    window.location.href = '/login';
+    auth.signOut().then(() => {
+      router.push('/login');
+    });
   };
 
   const pathIsPublic = publicPaths.includes(pathname);
 
-  // While loading, or if a user is not authenticated on a protected route, show a loader.
-  if (loading || (!user && !pathIsPublic)) {
+  if (loading) {
     return (
         <div className="flex h-screen items-center justify-center">
-            <div className="h-16 w-16 animate-spin rounded-full border-4 border-solid border-primary border-t-transparent"></div>
+             <Loader2 className="h-16 w-16 animate-spin text-primary" />
         </div>
     )
   }
