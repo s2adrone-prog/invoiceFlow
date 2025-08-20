@@ -25,13 +25,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const publicPaths = ['/login', '/signup', '/forgot-password'];
 
   useEffect(() => {
+    // This code now runs only on the client
+    let storedUser = null;
     try {
-      const storedUser = localStorage.getItem('loggedInUser');
+      storedUser = localStorage.getItem('loggedInUser');
       if (storedUser) {
         setUser(JSON.parse(storedUser));
       }
     } catch (error) {
       console.error("Failed to parse user from localStorage", error);
+      // Clear potentially corrupted item
+      localStorage.removeItem('loggedInUser');
     }
     setLoading(false);
   }, []);

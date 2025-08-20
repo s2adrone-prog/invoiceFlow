@@ -41,35 +41,24 @@ export default function LoginPage() {
     setIsLoading(true);
     // This timeout simulates a network request
     setTimeout(() => {
-      if (typeof window !== 'undefined') {
-        try {
-          const users = JSON.parse(localStorage.getItem('users') || '[]') as User[];
-          const user = users.find(u => u.email === values.email && u.password === values.password);
+        const users = JSON.parse(localStorage.getItem('users') || '[]') as User[];
+        const user = users.find(u => u.email === values.email && u.password === values.password);
 
-          if (user) {
-            const { password, ...userToLogin } = user;
-            login(userToLogin);
-            toast({
-              title: 'Success',
-              description: 'Logged in successfully.',
-            });
-          } else {
-            toast({
-              title: 'Error',
-              description: 'Invalid email or password.',
-              variant: 'destructive',
-            });
-            setIsLoading(false);
-          }
-        } catch (error) {
-          toast({
+        if (user) {
+        const { password, ...userToLogin } = user;
+        login(userToLogin);
+        toast({
+            title: 'Success',
+            description: 'Logged in successfully.',
+        });
+        } else {
+        toast({
             title: 'Error',
-            description: 'An unexpected error occurred.',
+            description: 'Invalid email or password.',
             variant: 'destructive',
-          });
-          setIsLoading(false);
+        });
+        setIsLoading(false);
         }
-      }
     }, 1000);
   };
 

@@ -40,46 +40,34 @@ export default function SignupPage() {
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     setTimeout(() => {
-      if (typeof window !== 'undefined') {
-        try {
-          const users = JSON.parse(localStorage.getItem('users') || '[]') as User[];
-          const userExists = users.some(u => u.email === values.email);
+        const users = JSON.parse(localStorage.getItem('users') || '[]') as User[];
+        const userExists = users.some(u => u.email === values.email);
 
-          if (userExists) {
-            toast({
-              title: 'Error',
-              description: 'An account with this email already exists.',
-              variant: 'destructive',
-            });
-            setIsLoading(false);
-            return;
-          }
-          
-          const newUser: User = {
-              id: Date.now().toString(),
-              ...values,
-          };
-
-          const updatedUsers = [...users, newUser];
-          localStorage.setItem('users', JSON.stringify(updatedUsers));
-          
-          const { password, ...userToLogin } = newUser;
-          login(userToLogin);
-
-          toast({
-            title: 'Success',
-            description: 'Account created successfully.',
-          });
-
-        } catch (error) {
-          toast({
+        if (userExists) {
+        toast({
             title: 'Error',
-            description: 'An unexpected error occurred.',
+            description: 'An account with this email already exists.',
             variant: 'destructive',
-          });
-          setIsLoading(false);
+        });
+        setIsLoading(false);
+        return;
         }
-      }
+        
+        const newUser: User = {
+            id: Date.now().toString(),
+            ...values,
+        };
+
+        const updatedUsers = [...users, newUser];
+        localStorage.setItem('users', JSON.stringify(updatedUsers));
+        
+        const { password, ...userToLogin } = newUser;
+        login(userToLogin);
+
+        toast({
+        title: 'Success',
+        description: 'Account created successfully.',
+        });
     }, 1000);
   };
 
