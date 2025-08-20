@@ -23,6 +23,8 @@ if (!admin.apps.length && serviceAccountString) {
   }
 }
 
-export const auth = admin.auth();
-export const db = admin.firestore();
+const auth = admin.auth();
+const db = admin.firestore();
+
+export { auth, db };
 export default admin;
