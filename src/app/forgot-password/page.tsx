@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,6 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useToast } from '@/hooks/use-toast';
 import { Logo } from '@/components/icons';
 import { Loader2 } from 'lucide-react';
+import { app } from '@/lib/firebase';
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -23,6 +25,7 @@ export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
+  const auth = getAuth(app);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -34,20 +37,7 @@ export default function ForgotPasswordPage() {
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/auth/reset-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: values.email }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || 'Something went wrong');
-      }
-
+      await sendPasswordResetEmail(auth, values.email);
       setIsSubmitted(true);
       toast({
         title: 'Check your email',
@@ -55,10 +45,12 @@ export default function ForgotPasswordPage() {
       });
 
     } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message || 'Failed to send password reset email. Please try again.',
-        variant: 'destructive',
+      console.error("Password reset error:", error);
+      // We still show a generic success message to prevent user enumeration
+      setIsSubmitted(true);
+       toast({
+        title: 'Check your email',
+        description: `If an account exists for ${values.email}, a password reset link has been sent.`,
       });
     } finally {
       setIsLoading(false);
