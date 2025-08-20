@@ -107,19 +107,25 @@ const initialInvoices: Invoice[] = [
   }
 ];
 
-const getCurrentUserKey = (): string | null => {
-  if (typeof window === 'undefined') return null;
+const getCurrentUserKey = (): string => {
+  if (typeof window === 'undefined') return 'invoices_anonymous';
   const user = auth.currentUser;
-  return user ? `invoices_${user.uid}` : 'invoices_anonymous';
+  const key = user ? `invoices_${user.uid}` : 'invoices_anonymous';
+  
+  if (user && !localStorage.getItem(key)) {
+    localStorage.setItem(key, JSON.stringify(initialInvoices));
+  }
+  
+  return key;
 };
 
 const getStoredInvoices = (): Invoice[] => {
   if (typeof window === 'undefined') {
-    return initialInvoices; // Return initial data for SSR or if not logged in
+    return [];
   }
   const userKey = getCurrentUserKey();
   const data = localStorage.getItem(userKey);
-  return data ? JSON.parse(data) : initialInvoices;
+  return data ? JSON.parse(data) : [];
 };
 
 const setStoredInvoices = (invoices: Invoice[]) => {
@@ -138,11 +144,11 @@ export async function getInvoices(): Promise<Invoice[]> {
   });
 }
 
-export async function getInvoiceById(id: string): Promise<Invoice | undefined> {
+export async function getInvoiceById(id: string): Promise<Invoice | null> {
   return new Promise((resolve) => {
     setTimeout(() => {
         const invoices = getStoredInvoices();
-      resolve(invoices.find((invoice) => invoice.id === id));
+      resolve(invoices.find((invoice) => invoice.id === id) || null);
     }, 100);
   });
 }

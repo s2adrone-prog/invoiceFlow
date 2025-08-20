@@ -7,21 +7,23 @@ import { getInvoiceById } from '@/lib/data';
 import { InvoicePreview } from '@/components/invoices/invoice-preview';
 import type { Invoice } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
+import { useAuth } from '@/components/auth-provider';
 
 export default function InvoicePage() {
   const params = useParams();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
   const [invoice, setInvoice] = useState<Invoice | null | undefined>(undefined);
+  const { user } = useAuth();
 
   useEffect(() => {
     async function fetchData() {
-      if (id) {
+      if (user && id) {
         const data = await getInvoiceById(id);
         setInvoice(data);
       }
     }
     fetchData();
-  }, [id]);
+  }, [id, user]);
 
   if (invoice === undefined) {
     return (

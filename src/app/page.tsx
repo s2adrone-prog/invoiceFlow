@@ -9,20 +9,24 @@ import type { Invoice } from '@/lib/types';
 import { StatCard } from '@/components/dashboard/stat-card';
 import { RecentInvoices } from '@/components/dashboard/recent-invoices';
 import { SalesChart } from '@/components/dashboard/sales-chart';
+import { useAuth } from '@/components/auth-provider';
 
 
 export default function DashboardPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
 
   useEffect(() => {
     async function fetchData() {
-      const data = await getInvoices();
-      setInvoices(data);
-      setIsLoading(false);
+      if(user) {
+        const data = await getInvoices();
+        setInvoices(data);
+        setIsLoading(false);
+      }
     }
     fetchData();
-  }, []);
+  }, [user]);
 
   if (isLoading) {
     return (

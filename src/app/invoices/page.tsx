@@ -6,20 +6,24 @@ import { InvoicesTable } from "@/components/invoices/invoices-table";
 import { getInvoices } from "@/lib/data";
 import type { Invoice } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
+import { useAuth } from '@/components/auth-provider';
 
 export default function InvoicesPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchInvoices = async () => {
-      const data = await getInvoices();
-      setInvoices(data);
-      setIsLoading(false);
+      if (user) {
+        const data = await getInvoices();
+        setInvoices(data);
+        setIsLoading(false);
+      }
     };
 
     fetchInvoices();
-  }, []);
+  }, [user]);
 
   if (isLoading) {
     return (
