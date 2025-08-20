@@ -10,24 +10,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Email is required' }, { status: 400 });
     }
 
+    // By using the Firebase Admin SDK, we can generate a password reset link
+    // that Firebase will email to the user.
     await auth.generatePasswordResetLink(email);
 
+    // For security reasons, we always return a success message, even if the
+    // email doesn't exist in our system. This prevents user enumeration.
     return NextResponse.json({ message: 'Password reset email sent successfully.' }, { status: 200 });
   } catch (error: any) {
     console.error('Password reset error:', error);
     
-    // Provide a more user-friendly error message
-    let errorMessage = 'An unexpected error occurred.';
-    let statusCode = 500;
-
+    // We check for the 'user-not-found' error code here. If it's anything else,
+    // it's a genuine server or configuration error.
     if (error.code === 'auth/user-not-found') {
-      // Don't reveal that the user does not exist.
-      // Return a generic success message to prevent user enumeration attacks.
+      // Still return a generic success message to the client.
       return NextResponse.json({ message: 'Password reset email sent successfully.' }, { status: 200 });
-    } else {
-        errorMessage = 'Failed to send password reset email. Please try again later.';
     }
 
-    return NextResponse.json({ message: errorMessage }, { status: statusCode });
+    // For other errors, we return a generic server error message.
+    return NextResponse.json({ message: 'An unexpected error occurred. Please try again later.' }, { status: 500 });
   }
 }

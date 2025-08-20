@@ -42,9 +42,10 @@ export default function ForgotPasswordPage() {
         body: JSON.stringify({ email: values.email }),
       });
 
+      const result = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Something went wrong');
+        throw new Error(result.message || 'Something went wrong');
       }
 
       setIsSubmitted(true);
@@ -74,7 +75,7 @@ export default function ForgotPasswordPage() {
           <CardTitle>Forgot Password</CardTitle>
           <CardDescription>
             {isSubmitted 
-              ? "Password reset link sent. You can close this tab."
+              ? "You can close this tab now."
               : "Enter your email to receive a password reset link."
             }
           </CardDescription>
@@ -101,7 +102,7 @@ export default function ForgotPasswordPage() {
                         )}
                     />
                 ) : (
-                    <p className="text-center text-sm text-green-600">Please check your email for the reset link.</p>
+                    <p className="text-center text-sm text-muted-foreground">If an account with that email exists, a reset link has been sent.</p>
                 )}
                 </CardContent>
                 <CardFooter className="flex-col gap-4">
