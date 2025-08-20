@@ -81,6 +81,8 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
   }, 0);
   const totalAfterDiscount = subtotal - totalDiscount;
   const gstAmount = invoice.gstRate > 0 ? totalAfterDiscount * (invoice.gstRate / 100) : 0;
+  const cgstAmount = gstAmount / 2;
+  const sgstAmount = gstAmount / 2;
 
 
   return (
@@ -181,10 +183,16 @@ export function InvoicePreview({ invoice }: { invoice: Invoice }) {
                 <span className="font-medium text-green-600">-₹{totalDiscount.toFixed(2)}</span>
               </div>
                {invoice.gstRate > 0 && (
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">GST ({invoice.gstRate}%)</span>
-                  <span className="font-medium">₹{gstAmount.toFixed(2)}</span>
-                </div>
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">CGST ({invoice.gstRate / 2}%)</span>
+                    <span className="font-medium">₹{cgstAmount.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">SGST ({invoice.gstRate / 2}%)</span>
+                    <span className="font-medium">₹{sgstAmount.toFixed(2)}</span>
+                  </div>
+                </>
               )}
               <Separator className="my-2" />
               <div className="flex justify-between font-bold text-lg">

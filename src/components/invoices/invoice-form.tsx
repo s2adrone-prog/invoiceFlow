@@ -92,6 +92,8 @@ export function InvoiceForm() {
   }, 0);
   const totalAfterDiscount = subtotal - totalDiscount;
   const gstAmount = isGstApplicable ? totalAfterDiscount * (watchedGstRate / 100) : 0;
+  const cgstAmount = gstAmount / 2;
+  const sgstAmount = gstAmount / 2;
   const total = totalAfterDiscount + gstAmount;
 
   async function onSubmit(data: InvoiceFormValues) {
@@ -337,10 +339,16 @@ export function InvoiceForm() {
                     <span className="text-green-600">-₹{totalDiscount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
                 {isGstApplicable && (
-                    <div className="flex justify-between">
-                        <span className="text-muted-foreground">GST ({watchedGstRate}%)</span>
-                        <span>₹{gstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                    </div>
+                    <>
+                        <div className="flex justify-between">
+                            <span className="text-muted-foreground">CGST ({watchedGstRate/2}%)</span>
+                            <span>₹{cgstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-muted-foreground">SGST ({watchedGstRate/2}%)</span>
+                            <span>₹{sgstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        </div>
+                    </>
                 )}
                 <Separator/>
                 <div className="flex justify-between text-xl font-bold">
