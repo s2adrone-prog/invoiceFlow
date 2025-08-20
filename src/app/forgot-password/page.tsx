@@ -27,6 +27,13 @@ export default function ForgotPasswordPage() {
   const { toast } = useToast();
   const auth = getAuth(app);
 
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+    },
+  });
+
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
