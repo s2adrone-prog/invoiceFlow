@@ -23,6 +23,9 @@ export default function DashboardPage() {
         const data = await getInvoices();
         setInvoices(data);
         setIsLoading(false);
+      } else {
+        // If no user, might still want to load something or handle the state
+        setIsLoading(false);
       }
     }
     fetchData();

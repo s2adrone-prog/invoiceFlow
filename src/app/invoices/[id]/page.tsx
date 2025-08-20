@@ -20,6 +20,9 @@ export default function InvoicePage() {
       if (user && id) {
         const data = await getInvoiceById(id);
         setInvoice(data);
+      } else {
+        // Handle case where there is no user or id
+        setInvoice(null);
       }
     }
     fetchData();

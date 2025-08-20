@@ -1,3 +1,4 @@
+
 export interface InvoiceItem {
   id: string;
   description: string;
@@ -17,4 +18,11 @@ export interface Invoice {
   items: InvoiceItem[];
   gstRate: number;
   total: number;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  password?: string;
 }

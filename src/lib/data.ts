@@ -1,8 +1,7 @@
 
 "use client"
 
-import type { Invoice } from './types';
-import { auth } from '@/lib/firebase';
+import type { Invoice, User } from './types';
 
 const initialInvoices: Invoice[] = [
   {
@@ -107,31 +106,28 @@ const initialInvoices: Invoice[] = [
   }
 ];
 
-const getCurrentUserKey = (): string => {
-  if (typeof window === 'undefined') return 'invoices_anonymous';
-  const user = auth.currentUser;
-  const key = user ? `invoices_${user.uid}` : 'invoices_anonymous';
-  
-  if (user && !localStorage.getItem(key)) {
-    localStorage.setItem(key, JSON.stringify(initialInvoices));
-  }
-  
-  return key;
-};
+const getUsers = (): User[] => {
+    if (typeof window === 'undefined') return [];
+    const users = localStorage.getItem('users');
+    return users ? JSON.parse(users) : [];
+}
 
 const getStoredInvoices = (): Invoice[] => {
   if (typeof window === 'undefined') {
     return [];
   }
-  const userKey = getCurrentUserKey();
-  const data = localStorage.getItem(userKey);
-  return data ? JSON.parse(data) : [];
+  const data = localStorage.getItem('invoices');
+  if (!data) {
+    // Initialize with sample data if nothing is in local storage
+    localStorage.setItem('invoices', JSON.stringify(initialInvoices));
+    return initialInvoices;
+  }
+  return JSON.parse(data);
 };
 
 const setStoredInvoices = (invoices: Invoice[]) => {
     if (typeof window === 'undefined') return;
-    const userKey = getCurrentUserKey();
-    localStorage.setItem(userKey, JSON.stringify(invoices));
+    localStorage.setItem('invoices', JSON.stringify(invoices));
 }
 
 // Simulate API calls

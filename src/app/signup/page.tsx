@@ -16,20 +16,24 @@ import { useToast } from '@/hooks/use-toast';
 import { Logo } from '@/components/icons';
 import { Loader2 } from 'lucide-react';
 import type { User } from '@/lib/types';
+import { useAuth } from '@/components/auth-provider';
 
 const formSchema = z.object({
+  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Please enter a valid email address." }),
-  password: z.string().min(1, { message: "Password is required." }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
 });
 
-export default function LoginPage() {
+export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
+  const { login } = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
     },
@@ -40,23 +44,35 @@ export default function LoginPage() {
     setTimeout(() => {
       try {
         const users = JSON.parse(localStorage.getItem('users') || '[]') as User[];
-        const user = users.find(u => u.email === values.email && u.password === values.password);
+        const userExists = users.some(u => u.email === values.email);
 
-        if (user) {
-          localStorage.setItem('loggedInUser', JSON.stringify(user));
-          toast({
-            title: 'Success',
-            description: 'Logged in successfully.',
-          });
-          router.push('/');
-          router.refresh(); // Force a refresh to update layout
-        } else {
+        if (userExists) {
           toast({
             title: 'Error',
-            description: 'Invalid email or password.',
+            description: 'An account with this email already exists.',
             variant: 'destructive',
           });
+          setIsLoading(false);
+          return;
         }
+        
+        const newUser: User = {
+            id: Date.now().toString(),
+            ...values,
+        };
+
+        const updatedUsers = [...users, newUser];
+        localStorage.setItem('users', JSON.stringify(updatedUsers));
+        
+        // Automatically log in the new user
+        const { password, ...userToLogin } = newUser;
+        login(userToLogin);
+
+        toast({
+          title: 'Success',
+          description: 'Account created successfully.',
+        });
+
       } catch (error) {
         toast({
           title: 'Error',
@@ -76,14 +92,31 @@ export default function LoginPage() {
             <div className="mb-4 flex justify-center">
                 <Logo />
             </div>
-          <CardTitle>Sign In</CardTitle>
+          <CardTitle>Create an Account</CardTitle>
           <CardDescription>
-            Enter your credentials to access your account.
+            Enter your details to get started.
           </CardDescription>
         </CardHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <CardContent className="space-y-4">
+              <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="John Doe"
+                          {...field}
+                          disabled={isLoading}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               <FormField
                 control={form.control}
                 name="email"
@@ -106,14 +139,7 @@ export default function LoginPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <div className="flex justify-between">
-                      <FormLabel>Password</FormLabel>
-                      <Link href="/forgot-password" passHref>
-                        <span className="text-sm font-medium text-primary hover:underline cursor-pointer">
-                          Forgot password?
-                        </span>
-                      </Link>
-                    </div>
+                    <FormLabel>Password</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
@@ -129,13 +155,13 @@ export default function LoginPage() {
             </CardContent>
             <CardFooter className="flex-col gap-4">
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? <Loader2 className="animate-spin"/> : 'Sign In'}
+                {isLoading ? <Loader2 className="animate-spin"/> : 'Sign Up'}
               </Button>
               <div className="text-sm">
-                Don't have an account?{' '}
-                <Link href="/signup" passHref>
+                Already have an account?{' '}
+                <Link href="/login" passHref>
                   <span className="font-medium text-primary hover:underline cursor-pointer">
-                    Sign up
+                    Sign in
                   </span>
                 </Link>
               </div>

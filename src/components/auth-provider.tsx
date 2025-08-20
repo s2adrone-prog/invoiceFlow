@@ -3,21 +3,15 @@
 
 import { useEffect, useState, createContext, useContext, ReactNode } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { onAuthStateChanged, isSignInWithEmailLink, signInWithEmailLink, User as FirebaseUser } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
 import { Loader2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import type { User } from '@/lib/types';
 
-interface User {
-  displayName: string | null;
-  email: string | null;
-  uid: string;
-}
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   logout: () => void;
+  login: (user: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,66 +21,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
-  const { toast } = useToast();
 
-  const publicPaths = ['/login'];
+  const publicPaths = ['/login', '/signup', '/forgot-password'];
 
   useEffect(() => {
-    // Handle the email link sign-in
-    if (isSignInWithEmailLink(auth, window.location.href)) {
-      let email = window.localStorage.getItem('emailForSignIn');
-      if (!email) {
-        email = window.prompt('Please provide your email for confirmation');
+    try {
+      const storedUser = localStorage.getItem('loggedInUser');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
       }
-      if(email) {
-        signInWithEmailLink(auth, email, window.location.href)
-          .then((result) => {
-            window.localStorage.removeItem('emailForSignIn');
-            setUser({
-              displayName: result.user.displayName,
-              email: result.user.email,
-              uid: result.user.uid
-            });
-            router.replace('/');
-          })
-          .catch((error) => {
-            toast({
-              title: "Sign In Error",
-              description: "The sign-in link is invalid or has expired.",
-              variant: "destructive"
-            });
-            router.replace('/login');
-          });
+    } catch (error) {
+      console.error("Failed to parse user from localStorage", error);
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      if (user && publicPaths.includes(pathname)) {
+        router.replace('/');
+      } else if (!user && !publicPaths.includes(pathname)) {
+        router.replace('/login');
       }
     }
+  }, [user, loading, pathname, router]);
 
 
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
-      if (firebaseUser) {
-        setUser({
-            displayName: firebaseUser.displayName || firebaseUser.email,
-            email: firebaseUser.email,
-            uid: firebaseUser.uid
-        });
-        if (publicPaths.includes(pathname)) {
-            router.replace('/');
-        }
-      } else {
-        setUser(null);
-        if (!publicPaths.includes(pathname)) {
-          router.replace('/login');
-        }
-      }
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, [pathname, router, toast]);
+  const login = (loggedInUser: User) => {
+    localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
+    setUser(loggedInUser);
+    router.push('/');
+  };
 
   const logout = () => {
-    auth.signOut().then(() => {
-      router.push('/login');
-    });
+    localStorage.removeItem('loggedInUser');
+    setUser(null);
+    router.push('/login');
   };
 
   if (loading) {
@@ -98,7 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
   
   return (
-    <AuthContext.Provider value={{ user, loading, logout }}>
+    <AuthContext.Provider value={{ user, loading, logout, login }}>
       {children}
     </AuthContext.Provider>
   );

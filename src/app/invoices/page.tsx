@@ -19,6 +19,8 @@ export default function InvoicesPage() {
         const data = await getInvoices();
         setInvoices(data);
         setIsLoading(false);
+      } else {
+        setIsLoading(false);
       }
     };
 
