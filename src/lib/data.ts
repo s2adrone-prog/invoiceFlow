@@ -163,8 +163,6 @@ export async function saveInvoice(invoiceData: Omit<Invoice, 'id' | 'invoiceNumb
             const updatedInvoices = [newInvoice, ...invoices];
             setStoredInvoices(updatedInvoices);
 
-            // This function is defined as 'async', so we can 'await' it.
-            // We are wrapping it in a try/catch block to prevent crashes if the sheet update fails.
             try {
                 const row = [
                     newInvoice.invoiceNumber,
@@ -179,8 +177,6 @@ export async function saveInvoice(invoiceData: Omit<Invoice, 'id' | 'invoiceNumb
                 await appendToSheet(row);
             } catch (error) {
                 console.error("Failed to update Google Sheet:", error);
-                // We don't reject the promise here because the primary action (saving to localStorage) succeeded.
-                // This makes the app more robust.
             }
 
             resolve(newInvoice);
