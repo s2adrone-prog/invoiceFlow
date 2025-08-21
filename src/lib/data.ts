@@ -2,6 +2,7 @@
 "use client"
 
 import type { Invoice, User } from './types';
+import { appendToSheet } from './google-sheets';
 
 const initialInvoices: Invoice[] = [
   {
@@ -144,8 +145,8 @@ export async function getInvoiceById(id: string): Promise<Invoice | null> {
 }
 
 export async function saveInvoice(invoiceData: Omit<Invoice, 'id' | 'invoiceNumber' | 'status'>): Promise<Invoice> {
-    return new Promise((resolve) => {
-        setTimeout(() => {
+    return new Promise((resolve, reject) => {
+        setTimeout(async () => {
             const invoices = getStoredInvoices();
             const latestInvoiceNumber = invoices.reduce((max, inv) => {
                 const num = parseInt(inv.invoiceNumber.split('-')[1]);
@@ -161,6 +162,28 @@ export async function saveInvoice(invoiceData: Omit<Invoice, 'id' | 'invoiceNumb
             };
             const updatedInvoices = [newInvoice, ...invoices];
             setStoredInvoices(updatedInvoices);
+
+            try {
+                // Prepare row data for Google Sheet
+                const row = [
+                    newInvoice.id,
+                    newInvoice.invoiceNumber,
+                    newInvoice.customerName,
+                    newInvoice.customerEmail,
+                    newInvoice.customerPhone,
+                    newInvoice.invoiceDate,
+                    newInvoice.status,
+                    newInvoice.total,
+                    newInvoice.gstRate,
+                    JSON.stringify(newInvoice.items),
+                ];
+                await appendToSheet(row);
+            } catch (error) {
+                console.error("Failed to update Google Sheet:", error);
+                // We don't reject the promise here because the primary action (saving to localStorage) succeeded.
+                // In a real app, you might want a more robust error handling or queuing mechanism.
+            }
+
             resolve(newInvoice);
         }, 200);
     });
