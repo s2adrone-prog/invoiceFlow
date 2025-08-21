@@ -166,16 +166,9 @@ export async function saveInvoice(invoiceData: Omit<Invoice, 'id' | 'invoiceNumb
             try {
                 // Prepare row data for Google Sheet
                 const row = [
-                    newInvoice.id,
-                    newInvoice.invoiceNumber,
                     newInvoice.customerName,
                     newInvoice.customerEmail,
                     newInvoice.customerPhone,
-                    newInvoice.invoiceDate,
-                    newInvoice.status,
-                    newInvoice.total,
-                    newInvoice.gstRate,
-                    JSON.stringify(newInvoice.items),
                 ];
                 await appendToSheet(row);
             } catch (error) {
