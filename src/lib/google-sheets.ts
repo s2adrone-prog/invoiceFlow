@@ -40,7 +40,6 @@ export async function appendToSheet(row: any[]) {
   } catch (error) {
     console.error('Error appending data to Google Sheet:', error);
     // Depending on requirements, you might want to re-throw the error
-    // or handle it silently. For now, we log it.
-    throw new Error('Failed to update the spreadsheet.');
+    // or handle it silently. For now, we log the detailed error and continue.
   }
 }

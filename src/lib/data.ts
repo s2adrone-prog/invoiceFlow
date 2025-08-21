@@ -145,7 +145,7 @@ export async function getInvoiceById(id: string): Promise<Invoice | null> {
 }
 
 export async function saveInvoice(invoiceData: Omit<Invoice, 'id' | 'invoiceNumber' | 'status'>): Promise<Invoice> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         setTimeout(async () => {
             const invoices = getStoredInvoices();
             const latestInvoiceNumber = invoices.reduce((max, inv) => {
