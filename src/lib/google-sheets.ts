@@ -24,9 +24,14 @@ async function getGoogleSheetsClient() {
 
 export async function appendToSheet(row: any[]) {
     if (!SHEET_ID) {
-        console.warn("Google Sheet ID is not configured. Skipping sheet update.");
+        console.warn("WARNING: GOOGLE_SHEET_ID is not set in your .env file. Skipping sheet update.");
         return;
     }
+    if (!SERVICE_ACCOUNT_CREDENTIALS) {
+        console.warn("WARNING: GOOGLE_SERVICE_ACCOUNT_CREDENTIALS is not set in your .env file. Skipping sheet update.");
+        return;
+    }
+
   try {
     const sheets = await getGoogleSheetsClient();
     await sheets.spreadsheets.values.append({
@@ -43,3 +48,4 @@ export async function appendToSheet(row: any[]) {
     // or handle it silently. For now, we log the detailed error and continue.
   }
 }
+
