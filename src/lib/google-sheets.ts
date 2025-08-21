@@ -48,4 +48,3 @@ export async function appendToSheet(row: any[]) {
     // or handle it silently. For now, we log the detailed error and continue.
   }
 }
-
