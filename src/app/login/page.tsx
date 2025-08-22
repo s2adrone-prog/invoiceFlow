@@ -28,6 +28,11 @@ const formSchema = z.object({
   password: z.string().min(1, { message: "Password is required." }),
 });
 
+const normalizePhoneNumber = (phone: string) => {
+    // Keeps the leading '+' but removes all other non-digit characters.
+    return `+${phone.replace(/\D/g, '')}`;
+}
+
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [countryCode, setCountryCode] = useState("+91");
@@ -96,7 +101,7 @@ export default function LoginPage() {
 
   const requestOtp = async () => {
     setIsLoading(true);
-    const fullPhoneNumber = `${countryCode}${phone}`;
+    const fullPhoneNumber = normalizePhoneNumber(`${countryCode}${phone}`);
     try {
         const q = query(collection(db, "allowedUsers"), where("phone", "==", fullPhoneNumber));
         const snap = await getDocs(q);
@@ -122,7 +127,7 @@ export default function LoginPage() {
   const verifyOtp = async () => {
     if (!confirmationResult) return;
     setIsLoading(true);
-    const fullPhoneNumber = `${countryCode}${phone}`;
+    const fullPhoneNumber = normalizePhoneNumber(`${countryCode}${phone}`);
     try {
         await confirmationResult.confirm(otp);
         
@@ -132,7 +137,7 @@ export default function LoginPage() {
             users = JSON.parse(storedUsers);
         }
         
-        let user = users.find(u => u.customerPhone === fullPhoneNumber);
+        let user = users.find(u => u.customerPhone && normalizePhoneNumber(u.customerPhone) === fullPhoneNumber);
 
         if (user) {
             const { password, ...userToLogin } = user;
