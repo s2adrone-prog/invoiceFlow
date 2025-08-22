@@ -21,6 +21,7 @@ import { Loader2 } from 'lucide-react';
 import type { User } from '@/lib/types';
 import { useAuth } from '@/components/auth-provider';
 import { auth, db } from '@/lib/firebase';
+import { Label } from '@/components/ui/label';
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -209,44 +210,42 @@ export default function LoginPage() {
                     </Form>
                 </TabsContent>
                 <TabsContent value="phone">
-                    <form onSubmit={(e) => e.preventDefault()} className="space-y-4 pt-4">
+                    <div className="space-y-4 pt-4">
                         {!confirmationResult ? (
                             <div className="space-y-4">
-                                <FormItem>
-                                    <FormLabel>Phone Number</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            value={phone}
-                                            onChange={(e) => setPhone(e.target.value)}
-                                            placeholder="+1 234 567 890"
-                                            disabled={isLoading}
-                                        />
-                                    </FormControl>
-                                </FormItem>
+                                <div className="space-y-2">
+                                    <Label htmlFor="phone-number">Phone Number</Label>
+                                    <Input
+                                        id="phone-number"
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value)}
+                                        placeholder="+1 234 567 890"
+                                        disabled={isLoading}
+                                    />
+                                </div>
                                 <Button onClick={requestOtp} className="w-full" disabled={isLoading || !phone}>
                                     {isLoading ? <Loader2 className="animate-spin"/> : 'Send OTP'}
                                 </Button>
                             </div>
                         ) : (
                             <div className="space-y-4">
-                                <FormItem>
-                                    <FormLabel>Enter OTP</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            value={otp}
-                                            onChange={(e) => setOtp(e.target.value)}
-                                            placeholder="123456"
-                                            disabled={isLoading}
-                                        />
-                                    </FormControl>
-                                </FormItem>
+                                <div className="space-y-2">
+                                    <Label htmlFor="otp">Enter OTP</Label>
+                                    <Input
+                                        id="otp"
+                                        value={otp}
+                                        onChange={(e) => setOtp(e.target.value)}
+                                        placeholder="123456"
+                                        disabled={isLoading}
+                                    />
+                                </div>
                                 <Button onClick={verifyOtp} className="w-full" disabled={isLoading || !otp}>
                                     {isLoading ? <Loader2 className="animate-spin"/> : 'Verify OTP & Sign In'}
                                 </Button>
                             </div>
                         )}
                         <div id="recaptcha-container"></div>
-                    </form>
+                    </div>
                 </TabsContent>
             </Tabs>
         </CardContent>
