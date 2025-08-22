@@ -1,25 +1,13 @@
 
 import { type NextRequest, NextResponse } from 'next/server';
-import { auth as adminAuth } from '@/lib/firebase-admin';
-import { auth as clientAuth } from '@/lib/firebase';
-import { verifyPasswordResetCode } from 'firebase/auth';
-
-// This is a workaround to handle a difficult-to-diagnose build issue
-// where the `firebase/auth` client SDK was being bundled on the server
-// in a way that caused runtime errors. By separating the verification
-// logic, we can better control the execution context.
-async function verifyCodeAndGetEmail(oobCode: string): Promise<string> {
-    try {
-        // This function MUST use the client SDK to verify the code.
-        return await verifyPasswordResetCode(clientAuth, oobCode);
-    } catch(error: any) {
-        // Re-throw the error to be caught by the main handler
-        throw error;
-    }
-}
-
+import { auth as adminAuth, isAdminAppInitialized } from '@/lib/firebase-admin';
 
 export async function POST(req: NextRequest) {
+  if (!isAdminAppInitialized() || !adminAuth) {
+    console.error("Firebase Admin SDK is not initialized. Check your environment variables.");
+    return NextResponse.json({ message: 'Server configuration error.' }, { status: 500 });
+  }
+
   try {
     const { oobCode, newPassword } = await req.json();
 
@@ -28,8 +16,8 @@ export async function POST(req: NextRequest) {
     }
 
     // 1. Verify the code and get the email.
-    // This step requires the client SDK, but we've isolated it.
-    const email = await verifyCodeAndGetEmail(oobCode);
+    // This requires the Admin SDK to verify the OOB code from the client.
+    const email = await adminAuth.verifyPasswordResetCode(oobCode);
     
     // 2. Get user by email via Admin SDK
     const user = await adminAuth.getUserByEmail(email);
@@ -39,8 +27,7 @@ export async function POST(req: NextRequest) {
       password: newPassword,
     });
     
-    // While not strictly necessary as the code is single-use,
-    // revoking refresh tokens is good practice after a password change.
+    // 4. Revoke refresh tokens as a security best practice.
     await adminAuth.revokeRefreshTokens(user.uid);
     
     return NextResponse.json({ message: 'Password reset successfully.' }, { status: 200 });
@@ -51,6 +38,7 @@ export async function POST(req: NextRequest) {
     let message = 'An unexpected error occurred.';
     let status = 400;
 
+    // Use error codes from firebase-admin, which may differ slightly from client SDK
     switch (error.code) {
       case 'auth/expired-action-code':
         message = 'The password reset code has expired. Please request a new one.';
@@ -65,7 +53,6 @@ export async function POST(req: NextRequest) {
         message = 'The new password is too weak.';
         break;
       default:
-        // Use a generic message for other errors to avoid leaking implementation details.
         message = "Could not reset password. Please try again.";
         status = 500;
         break;

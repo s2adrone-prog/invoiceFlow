@@ -4,27 +4,31 @@ import * as admin from 'firebase-admin';
 // This is a server-side only file.
 // It is used by API routes to interact with Firebase services.
 
-const serviceAccountString = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+let app: admin.app.App;
 
-if (!serviceAccountString) {
-  // In a real application, you might want to throw an error here.
-  // For this context, we will log a warning.
-  console.warn('The FIREBASE_SERVICE_ACCOUNT_KEY environment variable is not set. Firebase Admin SDK will not be initialized. API routes using it will fail.');
-}
-
-if (!admin.apps.length && serviceAccountString) {
-  try {
-    const serviceAccount = JSON.parse(serviceAccountString);
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount)
-    });
-  } catch(e) {
-    console.error("Failed to parse or initialize Firebase Admin SDK", e);
+if (!admin.apps.length) {
+  const serviceAccountString = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+  if (serviceAccountString) {
+    try {
+      const serviceAccount = JSON.parse(serviceAccountString);
+      app = admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+      });
+    } catch(e) {
+      console.error("Failed to parse or initialize Firebase Admin SDK", e);
+    }
+  } else {
+    console.warn('The FIREBASE_SERVICE_ACCOUNT_KEY environment variable is not set. Firebase Admin SDK will not be initialized. API routes using it will fail.');
   }
+} else {
+    app = admin.app();
 }
 
-const auth = admin.auth();
-const db = admin.firestore();
+const auth = app ? app.auth() : null;
+const db = app ? app.firestore() : null;
 
-export { auth, db };
+// A helper function to check if the admin app is initialized
+const isAdminAppInitialized = () => !!app && !!auth;
+
+export { auth, db, isAdminAppInitialized };
 export default admin;
