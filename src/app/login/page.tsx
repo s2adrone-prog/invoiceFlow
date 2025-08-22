@@ -47,20 +47,27 @@ export default function LoginPage() {
     },
   });
 
-  const handlePasswordLogin = (values: z.infer<typeof formSchema>) => {
+  const handlePasswordLogin = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
-    setTimeout(() => {
+    
+    try {
+        // 1. Check if email is in the allowedUsers collection
+        const q = query(collection(db, "allowedUsers"), where("email", "==", values.email));
+        const snap = await getDocs(q);
+        if (snap.empty) {
+            toast({ title: "Error", description: "This email is not authorized.", variant: "destructive" });
+            setIsLoading(false);
+            return;
+        }
+
+        // 2. Proceed with login from localStorage
         let users: User[] = [];
-        try {
-            const storedUsers = localStorage.getItem('users');
-            if (storedUsers) {
-                const parsedUsers = JSON.parse(storedUsers);
-                if (Array.isArray(parsedUsers)) {
-                    users = parsedUsers;
-                }
+        const storedUsers = localStorage.getItem('users');
+        if (storedUsers) {
+            const parsedUsers = JSON.parse(storedUsers);
+            if (Array.isArray(parsedUsers)) {
+                users = parsedUsers;
             }
-        } catch (e) {
-            console.error("Failed to parse users from localStorage", e);
         }
 
         const user = users.find(u => u.email === values.email && u.password === values.password);
@@ -79,8 +86,12 @@ export default function LoginPage() {
                 variant: 'destructive',
             });
         }
+    } catch (error) {
+        console.error("Login error:", error);
+        toast({ title: "Error", description: "An unexpected error occurred during login.", variant: "destructive" });
+    } finally {
         setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const requestOtp = async () => {
