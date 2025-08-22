@@ -85,7 +85,7 @@ export default function SignupPage() {
             name: values.name,
             email: values.email,
             password: values.password,
-            customerPhone: allowedUserData.phone || "", // Get phone from allowed user list
+            customerPhone: allowedUserData.phone || values.customerPhone || "", // Get phone from allowed user list
         };
 
         const updatedUsers = [...users, newUser];
