@@ -30,6 +30,7 @@ const formSchema = z.object({
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [countryCode, setCountryCode] = useState("+91");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
@@ -84,8 +85,9 @@ export default function LoginPage() {
 
   const requestOtp = async () => {
     setIsLoading(true);
+    const fullPhoneNumber = `${countryCode}${phone}`;
     try {
-        const q = query(collection(db, "allowedUsers"), where("phone", "==", phone));
+        const q = query(collection(db, "allowedUsers"), where("phone", "==", fullPhoneNumber));
         const snap = await getDocs(q);
         if (snap.empty) {
           toast({ title: "Error", description: "This phone number is not authorized.", variant: "destructive" });
@@ -95,7 +97,7 @@ export default function LoginPage() {
 
         (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", { size: "invisible" });
         const appVerifier = (window as any).recaptchaVerifier;
-        const confirmation = await signInWithPhoneNumber(auth, phone, appVerifier);
+        const confirmation = await signInWithPhoneNumber(auth, fullPhoneNumber, appVerifier);
         setConfirmationResult(confirmation);
         toast({ title: "OTP Sent", description: "An OTP has been sent to your phone." });
     } catch (error: any) {
@@ -108,6 +110,7 @@ export default function LoginPage() {
   const verifyOtp = async () => {
     if (!confirmationResult) return;
     setIsLoading(true);
+    const fullPhoneNumber = `${countryCode}${phone}`;
     try {
         await confirmationResult.confirm(otp);
         
@@ -120,7 +123,7 @@ export default function LoginPage() {
             }
         }
         
-        const user = users.find(u => u.customerPhone === phone);
+        const user = users.find(u => u.customerPhone === fullPhoneNumber);
 
         if (user) {
             const { password, ...userToLogin } = user;
@@ -215,13 +218,23 @@ export default function LoginPage() {
                             <div className="space-y-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="phone-number">Phone Number</Label>
-                                    <Input
-                                        id="phone-number"
-                                        value={phone}
-                                        onChange={(e) => setPhone(e.target.value)}
-                                        placeholder="+1 234 567 890"
-                                        disabled={isLoading}
-                                    />
+                                    <div className="flex gap-2">
+                                        <Input 
+                                            id="country-code"
+                                            value={countryCode}
+                                            onChange={(e) => setCountryCode(e.target.value)}
+                                            className="w-16"
+                                            disabled={isLoading}
+                                        />
+                                        <Input
+                                            id="phone-number"
+                                            value={phone}
+                                            onChange={(e) => setPhone(e.target.value)}
+                                            placeholder="98765 43210"
+                                            disabled={isLoading}
+                                            className="flex-1"
+                                        />
+                                    </div>
                                 </div>
                                 <Button onClick={requestOtp} className="w-full" disabled={isLoading || !phone}>
                                     {isLoading ? <Loader2 className="animate-spin"/> : 'Send OTP'}
