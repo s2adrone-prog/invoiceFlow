@@ -114,8 +114,9 @@ export default function LoginPage() {
     } catch (error: any) {
         console.error("OTP Error:", error);
         toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+        setIsLoading(false);
     }
-    setIsLoading(false);
   }
 
   const verifyOtp = async () => {
@@ -128,21 +129,39 @@ export default function LoginPage() {
         let users: User[] = [];
         const storedUsers = localStorage.getItem('users');
         if (storedUsers) {
-            const parsedUsers = JSON.parse(storedUsers);
-            if (Array.isArray(parsedUsers)) {
-                users = parsedUsers;
-            }
+            users = JSON.parse(storedUsers);
         }
         
-        const user = users.find(u => u.customerPhone === fullPhoneNumber);
+        let user = users.find(u => u.customerPhone === fullPhoneNumber);
 
         if (user) {
             const { password, ...userToLogin } = user;
             login(userToLogin);
             toast({ title: 'Success', description: 'Logged in successfully.' });
         } else {
-            // Fallback if user not found in localstorage, which shouldn't happen if they are in allowedUsers
-            toast({ title: 'Error', description: 'Could not find user data for this phone number.', variant: 'destructive' });
+            // If user doesn't exist in local storage, create them.
+            const q = query(collection(db, "allowedUsers"), where("phone", "==", fullPhoneNumber));
+            const snap = await getDocs(q);
+
+            if (snap.empty) {
+                toast({ title: "Error", description: "An unexpected error occurred. Authorization not found.", variant: "destructive" });
+                return;
+            }
+
+            const allowedUserData = snap.docs[0].data();
+            const newUser: User = {
+                id: Date.now().toString(),
+                name: allowedUserData.email?.split('@')[0] || "User", // Default name from email
+                email: allowedUserData.email || "",
+                customerPhone: fullPhoneNumber
+            };
+
+            const updatedUsers = [...users, newUser];
+            localStorage.setItem('users', JSON.stringify(updatedUsers));
+            
+            const { password, ...userToLogin } = newUser;
+            login(userToLogin);
+            toast({ title: 'Success', description: 'Account verified and logged in successfully.' });
         }
 
     } catch (error: any) {

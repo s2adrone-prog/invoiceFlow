@@ -23,7 +23,7 @@ export interface Invoice {
 export interface User {
   id: string;
   name: string;
-  email: string;
+  email?: string;
   password?: string;
   customerPhone?: string;
 }
