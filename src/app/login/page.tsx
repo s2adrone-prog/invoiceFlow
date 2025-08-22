@@ -30,7 +30,8 @@ const formSchema = z.object({
 
 const normalizePhoneNumber = (phone: string) => {
     // Keeps the leading '+' but removes all other non-digit characters.
-    return `+${phone.replace(/\D/g, '')}`;
+    const digits = phone.replace(/\D/g, '');
+    return `+${digits}`;
 }
 
 export default function LoginPage() {
@@ -311,3 +312,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    
